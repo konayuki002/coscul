@@ -5,6 +5,9 @@
   <li>
     <strong>Name:</strong>
     <%= @item.name %>
+
+    <strong>Stack:</strong>
+    <%= @item.stack %>
   </li>
 
 </ul>

@@ -5,6 +5,7 @@ defmodule Coscul.Data.Item do
 
   schema "items" do
     field :name, :string
+    field :stack, :integer
     has_many :input_terms, InputTerm
     has_many :output_terms, OutputTerm
 
@@ -14,7 +15,7 @@ defmodule Coscul.Data.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :stack])
+    |> validate_required([:name, :stack])
   end
 end

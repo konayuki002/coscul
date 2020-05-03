@@ -12,6 +12,7 @@
 <%= for item <- @items do %>
     <tr>
       <td><%= item.name %></td>
+      <td><%= item.stack %></td>
 
       <td>
         <span><%= link "Show", to: Routes.item_path(@conn, :show, item) %></span>
