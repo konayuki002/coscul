@@ -10,7 +10,7 @@
   <%= error_tag f, :name %>
 
   <%= label f, :stack %>
-  <%= text_input f, :stack %>
+  <%= number_input f, :stack, step: "any" %>
   <%= error_tag f, :stack %>
 
   <div>
