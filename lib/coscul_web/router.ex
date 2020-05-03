@@ -18,6 +18,7 @@ defmodule CosculWeb.Router do
 
     get "/", PageController, :index
     resources "/items", ItemController
+    resources "/recipes", RecipeController
   end
 
   # Other scopes may use custom stacks.

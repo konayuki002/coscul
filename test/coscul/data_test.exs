@@ -61,4 +61,63 @@ defmodule Coscul.DataTest do
       assert %Ecto.Changeset{} = Data.change_item(item)
     end
   end
+
+  describe "recipes" do
+    alias Coscul.Data.Recipe
+
+    @valid_attrs %{time: 120.5}
+    @update_attrs %{time: 456.7}
+    @invalid_attrs %{time: nil}
+
+    def recipe_fixture(attrs \\ %{}) do
+      {:ok, recipe} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Data.create_recipe()
+
+      recipe
+    end
+
+    test "list_recipes/0 returns all recipes" do
+      recipe = recipe_fixture()
+      assert Data.list_recipes() == [recipe]
+    end
+
+    test "get_recipe!/1 returns the recipe with given id" do
+      recipe = recipe_fixture()
+      assert Data.get_recipe!(recipe.id) == recipe
+    end
+
+    test "create_recipe/1 with valid data creates a recipe" do
+      assert {:ok, %Recipe{} = recipe} = Data.create_recipe(@valid_attrs)
+      assert recipe.time == 120.5
+    end
+
+    test "create_recipe/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_recipe(@invalid_attrs)
+    end
+
+    test "update_recipe/2 with valid data updates the recipe" do
+      recipe = recipe_fixture()
+      assert {:ok, %Recipe{} = recipe} = Data.update_recipe(recipe, @update_attrs)
+      assert recipe.time == 456.7
+    end
+
+    test "update_recipe/2 with invalid data returns error changeset" do
+      recipe = recipe_fixture()
+      assert {:error, %Ecto.Changeset{}} = Data.update_recipe(recipe, @invalid_attrs)
+      assert recipe == Data.get_recipe!(recipe.id)
+    end
+
+    test "delete_recipe/1 deletes the recipe" do
+      recipe = recipe_fixture()
+      assert {:ok, %Recipe{}} = Data.delete_recipe(recipe)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_recipe!(recipe.id) end
+    end
+
+    test "change_recipe/1 returns a recipe changeset" do
+      recipe = recipe_fixture()
+      assert %Ecto.Changeset{} = Data.change_recipe(recipe)
+    end
+  end
 end
