@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :coscul, Coscul.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "coscul",
+  password: "secret",
   database: "coscul_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
