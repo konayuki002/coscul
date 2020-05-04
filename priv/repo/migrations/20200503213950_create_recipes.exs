@@ -7,6 +7,5 @@ defmodule Coscul.Repo.Migrations.CreateRecipes do
 
       timestamps()
     end
-
   end
 end

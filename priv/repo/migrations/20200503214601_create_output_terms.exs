@@ -7,6 +7,5 @@ defmodule Coscul.Repo.Migrations.CreateOutputTerms do
 
       timestamps()
     end
-
   end
 end
