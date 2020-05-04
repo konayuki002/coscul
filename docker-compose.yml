@@ -4,6 +4,8 @@ services:
     build: ./dockerfiles/app
     volumes:
       - ${APP_CODE_PATH_HOST}:/app
+      - deps:/app/deps
+      - node_module:/app/assets/node_modules
     ports:
       - "${PHOENIX_PORT}:4000"
     environment:
@@ -11,7 +13,7 @@ services:
   postgres:
     build: ./dockerfiles/db
     volumes:
-      - ${DATA_PATH_HOST}/${COMPOSE_PROJECT_NAME}/postgres:/var/lib/postgresql/data
+      - postgresdata:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT}:5432"
     environment:
@@ -26,3 +28,10 @@ services:
       API_URL: ./swagger/swagger.json
     ports:
       - "${SWAGGER_UI_PORT}:8080"
+volumes:
+  postgresdata:
+    driver: "local"
+  node_module:
+    driver: "local"
+  deps:
+    driver: "local"
