@@ -24,6 +24,7 @@ defmodule CosculWeb.Router do
   scope "/api", CosculWeb.Api, as: :api do
     pipe_through :api
 
+    resources "/items", ItemController
     resources "/recipes", RecipeController
   end
 end
