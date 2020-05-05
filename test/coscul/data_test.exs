@@ -103,6 +103,14 @@ defmodule Coscul.DataTest do
       assert recipe.time == 120.5
     end
 
+    test "create_recipe/1 with terms data creates a recipe and terms" do
+      item = item_fixture()
+      attrs_with_terms = @valid_attrs |> Enum.into(%{terms: [%{item_id: item.id, value: 1}]})
+
+      assert {:ok, %Recipe{terms: [%Coscul.Data.Term{}]} = recipe} =
+               Data.create_recipe(attrs_with_terms)
+    end
+
     test "create_recipe/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Data.create_recipe(@invalid_attrs)
     end

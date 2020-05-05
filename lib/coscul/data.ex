@@ -177,6 +177,7 @@ defmodule Coscul.Data do
 
   defp create_related_terms(term_attrs, recipe) do
     term_attrs
+    |> Enum.map(&Map.put_new(&1, :recipe_id, recipe.id))
     |> Enum.map(&create_term(&1))
     |> Keyword.get(:error)
     |> check_created_terms_with_rollback(recipe)
