@@ -21,8 +21,9 @@ defmodule CosculWeb.Router do
     resources "/recipes", RecipeController
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", CosculWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", CosculWeb.Api, as: :api do
+    pipe_through :api
+
+    resources "/recipes", RecipeController
+  end
 end
