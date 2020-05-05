@@ -201,4 +201,97 @@ defmodule Coscul.Data do
   def change_recipe(%Recipe{} = recipe) do
     Recipe.changeset(recipe, %{})
   end
+
+  alias Coscul.Data.InputTerm
+
+  @doc """
+  Returns the list of input_terms.
+
+  ## Examples
+
+      iex> list_input_terms()
+      [%InputTerm{}, ...]
+
+  """
+  def list_input_terms do
+    Repo.all(InputTerm)
+  end
+
+  @doc """
+  Gets a single input_term.
+
+  Raises if the Input term does not exist.
+
+  ## Examples
+
+      iex> get_input_term!(123)
+      %InputTerm{}
+
+  """
+  def get_input_term!(id), do: Repo.get!(InputTerm, id)
+
+  @doc """
+  Creates a input_term.
+
+  ## Examples
+
+      iex> create_input_term(%{field: value})
+      {:ok, %InputTerm{}}
+
+      iex> create_input_term(%{field: bad_value})
+      {:error, ...}
+
+  """
+  def create_input_term(attrs \\ %{}) do
+    %InputTerm{}
+    |> InputTerm.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a input_term.
+
+  ## Examples
+
+      iex> update_input_term(input_term, %{field: new_value})
+      {:ok, %InputTerm{}}
+
+      iex> update_input_term(input_term, %{field: bad_value})
+      {:error, ...}
+
+  """
+  def update_input_term(%InputTerm{} = input_term, attrs) do
+    input_term
+    |> InputTerm.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a InputTerm.
+
+  ## Examples
+
+      iex> delete_input_term(input_term)
+      {:ok, %InputTerm{}}
+
+      iex> delete_input_term(input_term)
+      {:error, ...}
+
+  """
+  def delete_input_term(%InputTerm{} = input_term) do
+    InputTerm.delete(input_term)
+  end
+
+  @doc """
+  Returns a data structure for tracking input_term changes.
+
+  ## Examples
+
+      iex> change_input_term(input_term)
+      %Todo{...}
+
+  """
+  def change_input_term(%InputTerm{} = input_term) do
+    InputTerm.changeset(input_term, %{})
+  end
 end

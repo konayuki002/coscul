@@ -120,4 +120,61 @@ defmodule Coscul.DataTest do
       assert %Ecto.Changeset{} = Data.change_recipe(recipe)
     end
   end
+
+  describe "input_terms" do
+    alias Coscul.Data.InputTerm
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def input_term_fixture(attrs \\ %{}) do
+      {:ok, input_term} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Data.create_input_term()
+
+      input_term
+    end
+
+    test "list_input_terms/0 returns all input_terms" do
+      input_term = input_term_fixture()
+      assert Data.list_input_terms() == [input_term]
+    end
+
+    test "get_input_term!/1 returns the input_term with given id" do
+      input_term = input_term_fixture()
+      assert Data.get_input_term!(input_term.id) == input_term
+    end
+
+    test "create_input_term/1 with valid data creates a input_term" do
+      assert {:ok, %InputTerm{} = input_term} = Data.create_input_term(@valid_attrs)
+    end
+
+    test "create_input_term/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_input_term(@invalid_attrs)
+    end
+
+    test "update_input_term/2 with valid data updates the input_term" do
+      input_term = input_term_fixture()
+      assert {:ok, %InputTerm{} = input_term} = Data.update_input_term(input_term, @update_attrs)
+    end
+
+    test "update_input_term/2 with invalid data returns error changeset" do
+      input_term = input_term_fixture()
+      assert {:error, %Ecto.Changeset{}} = Data.update_input_term(input_term, @invalid_attrs)
+      assert input_term == Data.get_input_term!(input_term.id)
+    end
+
+    test "delete_input_term/1 deletes the input_term" do
+      input_term = input_term_fixture()
+      assert {:ok, %InputTerm{}} = Data.delete_input_term(input_term)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_input_term!(input_term.id) end
+    end
+
+    test "change_input_term/1 returns a input_term changeset" do
+      input_term = input_term_fixture()
+      assert %Ecto.Changeset{} = Data.change_input_term(input_term)
+    end
+  end
 end
