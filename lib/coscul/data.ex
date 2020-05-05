@@ -97,7 +97,6 @@ defmodule Coscul.Data do
     Term
     |> where(item_id: ^item.id)
     |> Repo.all()
-    |> IO.inspect()
     |> Enum.map(&get_recipe!(&1.recipe_id))
     |> Enum.each(&delete_recipe(&1))
 
@@ -167,9 +166,27 @@ defmodule Coscul.Data do
     |> Recipe.changeset(attrs)
     |> Repo.insert()
     |> case do
-      {:ok, recipe} -> {:ok, get_recipe!(recipe.id)}
+      {:ok, recipe} -> attrs |> Map.get(:terms) |> create_related_terms(recipe)
       {:error, _} = insert_result -> insert_result
     end
+  end
+
+  defp create_related_terms(nil, recipe) do
+    {:ok, get_recipe!(recipe.id)}
+  end
+
+  defp create_related_terms(term_attrs, recipe) do
+    term_attrs
+    |> Enum.map(&create_term(&1))
+    |> Keyword.get(:error)
+    |> check_created_terms_with_rollback(recipe)
+  end
+
+  defp check_created_terms_with_rollback(nil, recipe), do: {:ok, get_recipe!(recipe.id)}
+
+  defp check_created_terms_with_rollback(error_message, recipe) do
+    delete_recipe(recipe)
+    {:error, error_message}
   end
 
   @doc """
