@@ -5,7 +5,7 @@ defmodule Coscul.Data.Recipe do
 
   schema "recipes" do
     field :time, :float
-    has_many :terms, Term
+    field :terms, {:array, :map}
 
     timestamps()
   end
