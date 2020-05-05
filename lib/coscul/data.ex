@@ -279,7 +279,7 @@ defmodule Coscul.Data do
 
   """
   def delete_input_term(%InputTerm{} = input_term) do
-    InputTerm.delete(input_term)
+    Repo.delete(input_term)
   end
 
   @doc """
@@ -372,7 +372,7 @@ defmodule Coscul.Data do
 
   """
   def delete_output_term(%OutputTerm{} = output_term) do
-    OutputTerm.delete(output_term)
+    Repo.delete(output_term)
   end
 
   @doc """

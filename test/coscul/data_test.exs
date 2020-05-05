@@ -6,8 +6,8 @@ defmodule Coscul.DataTest do
   describe "items" do
     alias Coscul.Data.Item
 
-    @valid_attrs %{name: "some name"}
-    @update_attrs %{name: "some updated name"}
+    @valid_attrs %{name: "some name", stack: 1, input_terms: nil, output_terms: nil}
+    @update_attrs %{name: "some updated name", stack: 1, input_terms: nil, output_terms: nil}
     @invalid_attrs %{name: nil}
 
     def item_fixture(attrs \\ %{}) do
@@ -21,6 +21,12 @@ defmodule Coscul.DataTest do
 
     test "list_items/0 returns all items" do
       item = item_fixture()
+
+      item =
+        item
+        |> Map.put(:input_terms, [])
+        |> Map.put(:output_terms, [])
+
       assert Data.list_items() == [item]
     end
 
@@ -80,6 +86,12 @@ defmodule Coscul.DataTest do
 
     test "list_recipes/0 returns all recipes" do
       recipe = recipe_fixture()
+
+      recipe =
+        recipe
+        |> Map.put(:input_terms, [])
+        |> Map.put(:output_terms, [])
+
       assert Data.list_recipes() == [recipe]
     end
 
@@ -124,13 +136,15 @@ defmodule Coscul.DataTest do
   describe "input_terms" do
     alias Coscul.Data.InputTerm
 
-    @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
+    @valid_attrs %{value: 1}
+    @update_attrs %{value: 2}
 
     def input_term_fixture(attrs \\ %{}) do
+      item = item_fixture()
+
       {:ok, input_term} =
         attrs
+        |> Enum.into(%{item_id: item.id})
         |> Enum.into(@valid_attrs)
         |> Data.create_input_term()
 
@@ -160,12 +174,6 @@ defmodule Coscul.DataTest do
       assert {:ok, %InputTerm{} = input_term} = Data.update_input_term(input_term, @update_attrs)
     end
 
-    test "update_input_term/2 with invalid data returns error changeset" do
-      input_term = input_term_fixture()
-      assert {:error, %Ecto.Changeset{}} = Data.update_input_term(input_term, @invalid_attrs)
-      assert input_term == Data.get_input_term!(input_term.id)
-    end
-
     test "delete_input_term/1 deletes the input_term" do
       input_term = input_term_fixture()
       assert {:ok, %InputTerm{}} = Data.delete_input_term(input_term)
@@ -181,13 +189,15 @@ defmodule Coscul.DataTest do
   describe "output_terms" do
     alias Coscul.Data.OutputTerm
 
-    @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
+    @valid_attrs %{value: 1}
+    @update_attrs %{value: 2}
 
     def output_term_fixture(attrs \\ %{}) do
+      item = item_fixture()
+
       {:ok, output_term} =
         attrs
+        |> Enum.into(%{item_id: item.id})
         |> Enum.into(@valid_attrs)
         |> Data.create_output_term()
 
@@ -214,13 +224,9 @@ defmodule Coscul.DataTest do
 
     test "update_output_term/2 with valid data updates the output_term" do
       output_term = output_term_fixture()
-      assert {:ok, %OutputTerm{} = output_term} = Data.update_output_term(output_term, @update_attrs)
-    end
 
-    test "update_output_term/2 with invalid data returns error changeset" do
-      output_term = output_term_fixture()
-      assert {:error, %Ecto.Changeset{}} = Data.update_output_term(output_term, @invalid_attrs)
-      assert output_term == Data.get_output_term!(output_term.id)
+      assert {:ok, %OutputTerm{} = output_term} =
+               Data.update_output_term(output_term, @update_attrs)
     end
 
     test "delete_output_term/1 deletes the output_term" do
