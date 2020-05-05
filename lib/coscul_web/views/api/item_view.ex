@@ -11,6 +11,11 @@ defmodule CosculWeb.Api.ItemView do
   end
 
   def render("item.json", %{item: item}) do
-    %{id: item.id, name: item.name}
+    %{
+      id: item.id,
+      name: item.name,
+      input_terms: item.input_terms,
+      output_terms: item.output_terms
+    }
   end
 end

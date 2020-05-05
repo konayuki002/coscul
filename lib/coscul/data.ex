@@ -18,7 +18,9 @@ defmodule Coscul.Data do
 
   """
   def list_items do
-    Repo.all(Item)
+    Item
+    |> preload([:input_terms, :output_terms])
+    |> Repo.all()
   end
 
   @doc """
@@ -114,7 +116,9 @@ defmodule Coscul.Data do
 
   """
   def list_recipes do
-    Repo.all(Recipe)
+    Recipe
+    |> preload([:input_terms, :output_terms])
+    |> Repo.all()
   end
 
   @doc """

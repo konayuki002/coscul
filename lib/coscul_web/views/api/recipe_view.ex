@@ -11,6 +11,11 @@ defmodule CosculWeb.Api.RecipeView do
   end
 
   def render("recipe.json", %{recipe: recipe}) do
-    %{id: recipe.id, time: recipe.time}
+    %{
+      id: recipe.id,
+      time: recipe.time,
+      input_terms: recipe.input_terms,
+      output_terms: recipe.output_terms
+    }
   end
 end
