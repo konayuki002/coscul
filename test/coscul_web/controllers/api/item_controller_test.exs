@@ -11,38 +11,26 @@ defmodule CosculWeb.Api.ItemControllerTest do
   def fixture(:item) do
     {:ok, item} = Data.create_item(@create_attrs)
     recipe = fixture(:recipe)
-    fixture(:input_term, item, recipe)
-    fixture(:output_term, item, recipe)
+    fixture(:term, item, recipe)
     Data.get_item!(item.id)
   end
 
-  @recipe_attrs %{time: 1.0, input_term_id: nil, output_term_id: nil}
+  @recipe_attrs %{time: 1.0, term_id: nil}
 
   def fixture(:recipe) do
     {:ok, recipe} = Data.create_recipe(@recipe_attrs)
     recipe
   end
 
-  @input_term_attrs %{value: 1}
+  @term_attrs %{value: 1}
 
-  def fixture(:input_term, item, recipe) do
-    {:ok, input_term} =
-      @input_term_attrs
+  def fixture(:term, item, recipe) do
+    {:ok, term} =
+      @term_attrs
       |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
-      |> Data.create_input_term()
+      |> Data.create_term()
 
-    input_term
-  end
-
-  @output_term_attrs %{value: 1}
-
-  def fixture(:output_term, item, recipe) do
-    {:ok, output_term} =
-      @output_term_attrs
-      |> Enum.into(%{item_id: item.id, recipe_id: recipe.id})
-      |> Data.create_output_term()
-
-    output_term
+    term
   end
 
   setup %{conn: conn} do

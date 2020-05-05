@@ -94,20 +94,14 @@ defmodule Coscul.Data do
 
   """
   def delete_item(%Item{} = item) do
-    terms =
-      Term
-      |> where(item_id: ^item.id)
-      |> Repo.all()
-      |> Enum.flat_map(&fetch_related_recipe(&1))
-      |> Enum.each(&delete_recipe(&1))
+    Term
+    |> where(item_id: ^item.id)
+    |> Repo.all()
+    |> IO.inspect()
+    |> Enum.map(&get_recipe!(&1.recipe_id))
+    |> Enum.each(&delete_recipe(&1))
 
     Repo.delete(item)
-  end
-
-  defp fetch_related_recipe(term) do
-    Recipe
-    |> where(term_id: ^term.id)
-    |> Repo.all()
   end
 
   @doc """
