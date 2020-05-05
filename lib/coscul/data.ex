@@ -6,7 +6,7 @@ defmodule Coscul.Data do
   import Ecto.Query, warn: false
   alias Coscul.Repo
 
-  alias Coscul.Data.Item
+  alias Coscul.Data.{Item, Term, Recipe}
 
   @doc """
   Returns the list of items.
@@ -19,7 +19,7 @@ defmodule Coscul.Data do
   """
   def list_items do
     Item
-    |> preload([:input_terms, :output_terms])
+    |> preload([:terms])
     |> Repo.all()
   end
 
@@ -38,7 +38,7 @@ defmodule Coscul.Data do
 
   """
   def get_item!(id) do
-    Item |> preload([:input_terms, :output_terms]) |> Repo.get!(id)
+    Item |> preload([:terms]) |> Repo.get!(id)
   end
 
   @doc """
@@ -94,9 +94,20 @@ defmodule Coscul.Data do
 
   """
   def delete_item(%Item{} = item) do
-    item.input_terms |> Enum.each(&Repo.delete(&1))
-    item.output_terms |> Enum.each(&Repo.delete(&1))
+    terms =
+      Term
+      |> where(item_id: ^item.id)
+      |> Repo.all()
+      |> Enum.flat_map(&fetch_related_recipe(&1))
+      |> Enum.each(&delete_recipe(&1))
+
     Repo.delete(item)
+  end
+
+  defp fetch_related_recipe(term) do
+    Recipe
+    |> where(term_id: ^term.id)
+    |> Repo.all()
   end
 
   @doc """
@@ -112,8 +123,6 @@ defmodule Coscul.Data do
     Item.changeset(item, %{})
   end
 
-  alias Coscul.Data.Recipe
-
   @doc """
   Returns the list of recipes.
 
@@ -125,7 +134,7 @@ defmodule Coscul.Data do
   """
   def list_recipes do
     Recipe
-    |> preload([:input_terms, :output_terms])
+    |> preload([:terms])
     |> Repo.all()
   end
 
@@ -144,7 +153,7 @@ defmodule Coscul.Data do
 
   """
   def get_recipe!(id) do
-    Recipe |> preload([:input_terms, :output_terms]) |> Repo.get!(id)
+    Recipe |> preload([:terms]) |> Repo.get!(id)
   end
 
   @doc """
@@ -200,8 +209,6 @@ defmodule Coscul.Data do
 
   """
   def delete_recipe(%Recipe{} = recipe) do
-    recipe.input_terms |> Enum.each(&Repo.delete(&1))
-    recipe.output_terms |> Enum.each(&Repo.delete(&1))
     Repo.delete(recipe)
   end
 
@@ -218,189 +225,96 @@ defmodule Coscul.Data do
     Recipe.changeset(recipe, %{})
   end
 
-  alias Coscul.Data.InputTerm
+  alias Coscul.Data.Term
 
   @doc """
-  Returns the list of input_terms.
+  Returns the list of terms.
 
   ## Examples
 
-      iex> list_input_terms()
-      [%InputTerm{}, ...]
+      iex> list_terms()
+      [%Term{}, ...]
 
   """
-  def list_input_terms do
-    Repo.all(InputTerm)
+  def list_terms do
+    Repo.all(Term)
   end
 
   @doc """
-  Gets a single input_term.
+  Gets a single term.
 
-  Raises if the Input term does not exist.
+  Raises if the Term does not exist.
 
   ## Examples
 
-      iex> get_input_term!(123)
-      %InputTerm{}
+      iex> get_term!(123)
+      %Term{}
 
   """
-  def get_input_term!(id), do: Repo.get!(InputTerm, id)
+  def get_term!(id), do: Repo.get!(Term, id)
 
   @doc """
-  Creates a input_term.
+  Creates a term.
 
   ## Examples
 
-      iex> create_input_term(%{field: value})
-      {:ok, %InputTerm{}}
+      iex> create_term(%{field: value})
+      {:ok, %Term{}}
 
-      iex> create_input_term(%{field: bad_value})
+      iex> create_term(%{field: bad_value})
       {:error, ...}
 
   """
-  def create_input_term(attrs \\ %{}) do
-    %InputTerm{}
-    |> InputTerm.changeset(attrs)
+  def create_term(attrs \\ %{}) do
+    %Term{}
+    |> Term.changeset(attrs)
     |> Repo.insert()
   end
 
   @doc """
-  Updates a input_term.
+  Updates a term.
 
   ## Examples
 
-      iex> update_input_term(input_term, %{field: new_value})
-      {:ok, %InputTerm{}}
+      iex> update_term(term, %{field: new_value})
+      {:ok, %Term{}}
 
-      iex> update_input_term(input_term, %{field: bad_value})
+      iex> update_term(term, %{field: bad_value})
       {:error, ...}
 
   """
-  def update_input_term(%InputTerm{} = input_term, attrs) do
-    input_term
-    |> InputTerm.changeset(attrs)
+  def update_term(%Term{} = term, attrs) do
+    term
+    |> Term.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a InputTerm.
+  Deletes a Term.
 
   ## Examples
 
-      iex> delete_input_term(input_term)
-      {:ok, %InputTerm{}}
+      iex> delete_term(term)
+      {:ok, %Term{}}
 
-      iex> delete_input_term(input_term)
+      iex> delete_term(term)
       {:error, ...}
 
   """
-  def delete_input_term(%InputTerm{} = input_term) do
-    Repo.delete(input_term)
+  def delete_term(%Term{} = term) do
+    Repo.delete(term)
   end
 
   @doc """
-  Returns a data structure for tracking input_term changes.
+  Returns a data structure for tracking term changes.
 
   ## Examples
 
-      iex> change_input_term(input_term)
+      iex> change_term(term)
       %Todo{...}
 
   """
-  def change_input_term(%InputTerm{} = input_term) do
-    InputTerm.changeset(input_term, %{})
-  end
-
-  alias Coscul.Data.OutputTerm
-
-  @doc """
-  Returns the list of output_terms.
-
-  ## Examples
-
-      iex> list_output_terms()
-      [%OutputTerm{}, ...]
-
-  """
-  def list_output_terms do
-    Repo.all(OutputTerm)
-  end
-
-  @doc """
-  Gets a single output_term.
-
-  Raises if the Output term does not exist.
-
-  ## Examples
-
-      iex> get_output_term!(123)
-      %OutputTerm{}
-
-  """
-  def get_output_term!(id), do: Repo.get!(OutputTerm, id)
-
-  @doc """
-  Creates a output_term.
-
-  ## Examples
-
-      iex> create_output_term(%{field: value})
-      {:ok, %OutputTerm{}}
-
-      iex> create_output_term(%{field: bad_value})
-      {:error, ...}
-
-  """
-  def create_output_term(attrs \\ %{}) do
-    %OutputTerm{}
-    |> OutputTerm.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a output_term.
-
-  ## Examples
-
-      iex> update_output_term(output_term, %{field: new_value})
-      {:ok, %OutputTerm{}}
-
-      iex> update_output_term(output_term, %{field: bad_value})
-      {:error, ...}
-
-  """
-  def update_output_term(%OutputTerm{} = output_term, attrs) do
-    output_term
-    |> OutputTerm.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a OutputTerm.
-
-  ## Examples
-
-      iex> delete_output_term(output_term)
-      {:ok, %OutputTerm{}}
-
-      iex> delete_output_term(output_term)
-      {:error, ...}
-
-  """
-  def delete_output_term(%OutputTerm{} = output_term) do
-    Repo.delete(output_term)
-  end
-
-  @doc """
-  Returns a data structure for tracking output_term changes.
-
-  ## Examples
-
-      iex> change_output_term(output_term)
-      %Todo{...}
-
-  """
-  def change_output_term(%OutputTerm{} = output_term) do
-    OutputTerm.changeset(output_term, %{})
+  def change_term(%Term{} = term) do
+    Term.changeset(term, %{})
   end
 end

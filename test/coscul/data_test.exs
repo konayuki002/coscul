@@ -6,8 +6,8 @@ defmodule Coscul.DataTest do
   describe "items" do
     alias Coscul.Data.Item
 
-    @valid_attrs %{name: "some name", stack: 1, input_terms: nil, output_terms: nil}
-    @update_attrs %{name: "some updated name", stack: 1, input_terms: nil, output_terms: nil}
+    @valid_attrs %{name: "some name", stack: 1, terms: nil}
+    @update_attrs %{name: "some updated name", stack: 1, terms: nil}
     @invalid_attrs %{name: nil}
 
     def item_fixture(attrs \\ %{}) do
@@ -24,8 +24,7 @@ defmodule Coscul.DataTest do
 
       item =
         item
-        |> Map.put(:input_terms, [])
-        |> Map.put(:output_terms, [])
+        |> Map.put(:terms, [])
 
       assert Data.list_items() == [item]
     end
@@ -89,8 +88,7 @@ defmodule Coscul.DataTest do
 
       recipe =
         recipe
-        |> Map.put(:input_terms, [])
-        |> Map.put(:output_terms, [])
+        |> Map.put(:terms, [])
 
       assert Data.list_recipes() == [recipe]
     end
@@ -133,129 +131,65 @@ defmodule Coscul.DataTest do
     end
   end
 
-  describe "input_terms" do
-    alias Coscul.Data.InputTerm
+  describe "terms" do
+    alias Coscul.Data.Term
 
     @valid_attrs %{value: 1}
     @update_attrs %{value: 2}
 
-    def input_term_fixture(attrs \\ %{}) do
+    def term_fixture(attrs \\ %{}) do
       item = item_fixture()
       recipe = recipe_fixture()
 
-      {:ok, input_term} =
+      {:ok, term} =
         attrs
         |> Enum.into(%{item_id: item.id, recipe_id: recipe.id()})
         |> Enum.into(@valid_attrs)
-        |> Data.create_input_term()
+        |> Data.create_term()
 
-      input_term
+      term
     end
 
-    test "list_input_terms/0 returns all input_terms" do
-      input_term = input_term_fixture()
-      assert Data.list_input_terms() == [input_term]
+    test "list_terms/0 returns all terms" do
+      term = term_fixture()
+      assert Data.list_terms() == [term]
     end
 
-    test "get_input_term!/1 returns the input_term with given id" do
-      input_term = input_term_fixture()
-      assert Data.get_input_term!(input_term.id) == input_term
+    test "get_term!/1 returns the term with given id" do
+      term = term_fixture()
+      assert Data.get_term!(term.id) == term
     end
 
-    test "create_input_term/1 with valid data creates a input_term" do
+    test "create_term/1 with valid data creates a term" do
       item = item_fixture()
       recipe = recipe_fixture()
 
       created_repo =
         @valid_attrs
         |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
-        |> Data.create_input_term()
+        |> Data.create_term()
 
-      assert {:ok, %InputTerm{} = input_term} = created_repo
+      assert {:ok, %Term{} = term} = created_repo
     end
 
-    test "create_input_term/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Data.create_input_term(@invalid_attrs)
+    test "create_term/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_term(@invalid_attrs)
     end
 
-    test "update_input_term/2 with valid data updates the input_term" do
-      input_term = input_term_fixture()
-      assert {:ok, %InputTerm{} = input_term} = Data.update_input_term(input_term, @update_attrs)
+    test "update_term/2 with valid data updates the term" do
+      term = term_fixture()
+      assert {:ok, %Term{} = term} = Data.update_term(term, @update_attrs)
     end
 
-    test "delete_input_term/1 deletes the input_term" do
-      input_term = input_term_fixture()
-      assert {:ok, %InputTerm{}} = Data.delete_input_term(input_term)
-      assert_raise Ecto.NoResultsError, fn -> Data.get_input_term!(input_term.id) end
+    test "delete_term/1 deletes the term" do
+      term = term_fixture()
+      assert {:ok, %Term{}} = Data.delete_term(term)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_term!(term.id) end
     end
 
-    test "change_input_term/1 returns a input_term changeset" do
-      input_term = input_term_fixture()
-      assert %Ecto.Changeset{} = Data.change_input_term(input_term)
-    end
-  end
-
-  describe "output_terms" do
-    alias Coscul.Data.OutputTerm
-
-    @valid_attrs %{value: 1}
-    @update_attrs %{value: 2}
-
-    def output_term_fixture(attrs \\ %{}) do
-      item = item_fixture()
-      recipe = recipe_fixture()
-
-      {:ok, output_term} =
-        attrs
-        |> Enum.into(%{item_id: item.id, recipe_id: recipe.id})
-        |> Enum.into(@valid_attrs)
-        |> Data.create_output_term()
-
-      output_term
-    end
-
-    test "list_output_terms/0 returns all output_terms" do
-      output_term = output_term_fixture()
-      assert Data.list_output_terms() == [output_term]
-    end
-
-    test "get_output_term!/1 returns the output_term with given id" do
-      output_term = output_term_fixture()
-      assert Data.get_output_term!(output_term.id) == output_term
-    end
-
-    test "create_output_term/1 with valid data creates a output_term" do
-      item = item_fixture()
-      recipe = recipe_fixture()
-
-      created_repo =
-        @valid_attrs
-        |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
-        |> Data.create_output_term()
-
-      assert {:ok, %OutputTerm{} = output_term} = created_repo
-    end
-
-    test "create_output_term/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Data.create_output_term(@invalid_attrs)
-    end
-
-    test "update_output_term/2 with valid data updates the output_term" do
-      output_term = output_term_fixture()
-
-      assert {:ok, %OutputTerm{} = output_term} =
-               Data.update_output_term(output_term, @update_attrs)
-    end
-
-    test "delete_output_term/1 deletes the output_term" do
-      output_term = output_term_fixture()
-      assert {:ok, %OutputTerm{}} = Data.delete_output_term(output_term)
-      assert_raise Ecto.NoResultsError, fn -> Data.get_output_term!(output_term.id) end
-    end
-
-    test "change_output_term/1 returns a output_term changeset" do
-      output_term = output_term_fixture()
-      assert %Ecto.Changeset{} = Data.change_output_term(output_term)
+    test "change_term/1 returns a term changeset" do
+      term = term_fixture()
+      assert %Ecto.Changeset{} = Data.change_term(term)
     end
   end
 end

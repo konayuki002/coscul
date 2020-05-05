@@ -1,12 +1,10 @@
 defmodule Coscul.Data.Term do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Coscul.Data.{Item, Term}
+  alias Coscul.Data.{Item, Recipe}
 
   schema "terms" do
-    field :value, :string
-    field :item_id, :id
-    field :recipe_id, :id
+    field :value, :integer
     belongs_to :item, Item
     belongs_to :recipe, Recipe
 
