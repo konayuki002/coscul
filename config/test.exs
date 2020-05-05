@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :coscul, Coscul.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "coscul",
+  password: "secret",
   database: "coscul_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,
