@@ -177,4 +177,61 @@ defmodule Coscul.DataTest do
       assert %Ecto.Changeset{} = Data.change_input_term(input_term)
     end
   end
+
+  describe "output_terms" do
+    alias Coscul.Data.OutputTerm
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def output_term_fixture(attrs \\ %{}) do
+      {:ok, output_term} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Data.create_output_term()
+
+      output_term
+    end
+
+    test "list_output_terms/0 returns all output_terms" do
+      output_term = output_term_fixture()
+      assert Data.list_output_terms() == [output_term]
+    end
+
+    test "get_output_term!/1 returns the output_term with given id" do
+      output_term = output_term_fixture()
+      assert Data.get_output_term!(output_term.id) == output_term
+    end
+
+    test "create_output_term/1 with valid data creates a output_term" do
+      assert {:ok, %OutputTerm{} = output_term} = Data.create_output_term(@valid_attrs)
+    end
+
+    test "create_output_term/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_output_term(@invalid_attrs)
+    end
+
+    test "update_output_term/2 with valid data updates the output_term" do
+      output_term = output_term_fixture()
+      assert {:ok, %OutputTerm{} = output_term} = Data.update_output_term(output_term, @update_attrs)
+    end
+
+    test "update_output_term/2 with invalid data returns error changeset" do
+      output_term = output_term_fixture()
+      assert {:error, %Ecto.Changeset{}} = Data.update_output_term(output_term, @invalid_attrs)
+      assert output_term == Data.get_output_term!(output_term.id)
+    end
+
+    test "delete_output_term/1 deletes the output_term" do
+      output_term = output_term_fixture()
+      assert {:ok, %OutputTerm{}} = Data.delete_output_term(output_term)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_output_term!(output_term.id) end
+    end
+
+    test "change_output_term/1 returns a output_term changeset" do
+      output_term = output_term_fixture()
+      assert %Ecto.Changeset{} = Data.change_output_term(output_term)
+    end
+  end
 end

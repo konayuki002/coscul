@@ -294,4 +294,97 @@ defmodule Coscul.Data do
   def change_input_term(%InputTerm{} = input_term) do
     InputTerm.changeset(input_term, %{})
   end
+
+  alias Coscul.Data.OutputTerm
+
+  @doc """
+  Returns the list of output_terms.
+
+  ## Examples
+
+      iex> list_output_terms()
+      [%OutputTerm{}, ...]
+
+  """
+  def list_output_terms do
+    Repo.all(OutputTerm)
+  end
+
+  @doc """
+  Gets a single output_term.
+
+  Raises if the Output term does not exist.
+
+  ## Examples
+
+      iex> get_output_term!(123)
+      %OutputTerm{}
+
+  """
+  def get_output_term!(id), do: Repo.get!(OutputTerm, id)
+
+  @doc """
+  Creates a output_term.
+
+  ## Examples
+
+      iex> create_output_term(%{field: value})
+      {:ok, %OutputTerm{}}
+
+      iex> create_output_term(%{field: bad_value})
+      {:error, ...}
+
+  """
+  def create_output_term(attrs \\ %{}) do
+    %OutputTerm{}
+    |> OutputTerm.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a output_term.
+
+  ## Examples
+
+      iex> update_output_term(output_term, %{field: new_value})
+      {:ok, %OutputTerm{}}
+
+      iex> update_output_term(output_term, %{field: bad_value})
+      {:error, ...}
+
+  """
+  def update_output_term(%OutputTerm{} = output_term, attrs) do
+    output_term
+    |> OutputTerm.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a OutputTerm.
+
+  ## Examples
+
+      iex> delete_output_term(output_term)
+      {:ok, %OutputTerm{}}
+
+      iex> delete_output_term(output_term)
+      {:error, ...}
+
+  """
+  def delete_output_term(%OutputTerm{} = output_term) do
+    OutputTerm.delete(output_term)
+  end
+
+  @doc """
+  Returns a data structure for tracking output_term changes.
+
+  ## Examples
+
+      iex> change_output_term(output_term)
+      %Todo{...}
+
+  """
+  def change_output_term(%OutputTerm{} = output_term) do
+    OutputTerm.changeset(output_term, %{})
+  end
 end
