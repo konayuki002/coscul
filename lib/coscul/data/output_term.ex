@@ -14,7 +14,7 @@ defmodule Coscul.Data.OutputTerm do
   @doc false
   def changeset(output_term, attrs) do
     output_term
-    |> cast(attrs, [:value])
-    |> validate_required([:value])
+    |> cast(attrs, [:value, :item_id, :recipe_id])
+    |> validate_required([:value, :item_id, :recipe_id])
   end
 end

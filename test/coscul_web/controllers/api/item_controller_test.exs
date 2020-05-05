@@ -4,17 +4,45 @@ defmodule CosculWeb.Api.ItemControllerTest do
   alias Coscul.Data
   alias Coscul.Data.Item
 
-  @create_attrs %{
-
-  }
-  @update_attrs %{
-
-  }
-  @invalid_attrs %{}
+  @create_attrs %{name: "some name", time: 1.0, stack: 1}
+  @update_attrs %{name: "some updated name", time: 2.0, stack: 2}
+  @invalid_attrs %{name: nil}
 
   def fixture(:item) do
     {:ok, item} = Data.create_item(@create_attrs)
-    item
+    recipe = fixture(:recipe)
+    fixture(:input_term, item, recipe)
+    fixture(:output_term, item, recipe)
+    Data.get_item!(item.id)
+  end
+
+  @recipe_attrs %{time: 1.0, input_term_id: nil, output_term_id: nil}
+
+  def fixture(:recipe) do
+    {:ok, recipe} = Data.create_recipe(@recipe_attrs)
+    recipe
+  end
+
+  @input_term_attrs %{value: 1}
+
+  def fixture(:input_term, item, recipe) do
+    {:ok, input_term} =
+      @input_term_attrs
+      |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
+      |> Data.create_input_term()
+
+    input_term
+  end
+
+  @output_term_attrs %{value: 1}
+
+  def fixture(:output_term, item, recipe) do
+    {:ok, output_term} =
+      @output_term_attrs
+      |> Enum.into(%{item_id: item.id, recipe_id: recipe.id})
+      |> Data.create_output_term()
+
+    output_term
   end
 
   setup %{conn: conn} do

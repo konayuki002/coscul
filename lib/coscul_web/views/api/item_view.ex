@@ -1,6 +1,6 @@
 defmodule CosculWeb.Api.ItemView do
   use CosculWeb, :view
-  alias CosculWeb.Api.ItemView
+  alias CosculWeb.Api.{ItemView, InputTermView, OutputTermView}
 
   def render("index.json", %{items: items}) do
     %{data: render_many(items, ItemView, "item.json")}
@@ -14,8 +14,9 @@ defmodule CosculWeb.Api.ItemView do
     %{
       id: item.id,
       name: item.name,
-      input_terms: item.input_terms,
-      output_terms: item.output_terms
+      stack: item.stack,
+      input_terms: InputTermView.render("index.json", %{input_terms: item.input_terms}),
+      output_terms: OutputTermView.render("index.json", %{output_terms: item.output_terms})
     }
   end
 end

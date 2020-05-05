@@ -14,7 +14,7 @@ defmodule Coscul.Data.InputTerm do
   @doc false
   def changeset(input_term, attrs) do
     input_term
-    |> cast(attrs, [:value])
-    |> validate_required([:value])
+    |> cast(attrs, [:value, :item_id, :recipe_id])
+    |> validate_required([:value, :item_id, :recipe_id])
   end
 end

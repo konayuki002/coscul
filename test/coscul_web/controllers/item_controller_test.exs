@@ -3,8 +3,8 @@ defmodule CosculWeb.ItemControllerTest do
 
   alias Coscul.Data
 
-  @create_attrs %{name: "some name"}
-  @update_attrs %{name: "some updated name"}
+  @create_attrs %{name: "some name", time: 1.0, stack: 1}
+  @update_attrs %{name: "some updated name", time: 2.0, stack: 1}
   @invalid_attrs %{name: nil}
 
   def fixture(:item) do
@@ -75,6 +75,7 @@ defmodule CosculWeb.ItemControllerTest do
     test "deletes chosen item", %{conn: conn, item: item} do
       conn = delete(conn, Routes.item_path(conn, :delete, item))
       assert redirected_to(conn) == Routes.item_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.item_path(conn, :show, item))
       end

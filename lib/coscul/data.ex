@@ -37,7 +37,9 @@ defmodule Coscul.Data do
       ** (Ecto.NoResultsError)
 
   """
-  def get_item!(id), do: Repo.get!(Item, id)
+  def get_item!(id) do
+    Item |> preload([:input_terms, :output_terms]) |> Repo.get!(id)
+  end
 
   @doc """
   Creates a item.
@@ -55,6 +57,10 @@ defmodule Coscul.Data do
     %Item{}
     |> Item.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, item} -> {:ok, get_item!(item.id)}
+      {:error, _} = insert_result -> insert_result
+    end
   end
 
   @doc """
@@ -88,6 +94,8 @@ defmodule Coscul.Data do
 
   """
   def delete_item(%Item{} = item) do
+    item.input_terms |> Enum.each(&Repo.delete(&1))
+    item.output_terms |> Enum.each(&Repo.delete(&1))
     Repo.delete(item)
   end
 
@@ -135,7 +143,9 @@ defmodule Coscul.Data do
       ** (Ecto.NoResultsError)
 
   """
-  def get_recipe!(id), do: Repo.get!(Recipe, id)
+  def get_recipe!(id) do
+    Recipe |> preload([:input_terms, :output_terms]) |> Repo.get!(id)
+  end
 
   @doc """
   Creates a recipe.
@@ -153,6 +163,10 @@ defmodule Coscul.Data do
     %Recipe{}
     |> Recipe.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, recipe} -> {:ok, get_recipe!(recipe.id)}
+      {:error, _} = insert_result -> insert_result
+    end
   end
 
   @doc """
@@ -186,6 +200,8 @@ defmodule Coscul.Data do
 
   """
   def delete_recipe(%Recipe{} = recipe) do
+    recipe.input_terms |> Enum.each(&Repo.delete(&1))
+    recipe.output_terms |> Enum.each(&Repo.delete(&1))
     Repo.delete(recipe)
   end
 
