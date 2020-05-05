@@ -133,6 +133,14 @@ defmodule Coscul.DataTest do
       assert_raise Ecto.NoResultsError, fn -> Data.get_recipe!(recipe.id) end
     end
 
+    test "delete_recipe/1 deletes the recipe and related terms" do
+      item = item_fixture()
+      recipe = recipe_fixture(%{terms: [%{item_id: item.id, value: 1}]})
+      term = recipe |> Map.get(:terms) |> hd
+      assert {:ok, %Recipe{}} = Data.delete_recipe(recipe)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_term!(term.id) end
+    end
+
     test "change_recipe/1 returns a recipe changeset" do
       recipe = recipe_fixture()
       assert %Ecto.Changeset{} = Data.change_recipe(recipe)
