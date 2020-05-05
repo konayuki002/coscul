@@ -141,10 +141,11 @@ defmodule Coscul.DataTest do
 
     def input_term_fixture(attrs \\ %{}) do
       item = item_fixture()
+      recipe = recipe_fixture()
 
       {:ok, input_term} =
         attrs
-        |> Enum.into(%{item_id: item.id})
+        |> Enum.into(%{item_id: item.id, recipe_id: recipe.id()})
         |> Enum.into(@valid_attrs)
         |> Data.create_input_term()
 
@@ -162,7 +163,15 @@ defmodule Coscul.DataTest do
     end
 
     test "create_input_term/1 with valid data creates a input_term" do
-      assert {:ok, %InputTerm{} = input_term} = Data.create_input_term(@valid_attrs)
+      item = item_fixture()
+      recipe = recipe_fixture()
+
+      created_repo =
+        @valid_attrs
+        |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
+        |> Data.create_input_term()
+
+      assert {:ok, %InputTerm{} = input_term} = created_repo
     end
 
     test "create_input_term/1 with invalid data returns error changeset" do
@@ -194,10 +203,11 @@ defmodule Coscul.DataTest do
 
     def output_term_fixture(attrs \\ %{}) do
       item = item_fixture()
+      recipe = recipe_fixture()
 
       {:ok, output_term} =
         attrs
-        |> Enum.into(%{item_id: item.id})
+        |> Enum.into(%{item_id: item.id, recipe_id: recipe.id})
         |> Enum.into(@valid_attrs)
         |> Data.create_output_term()
 
@@ -215,7 +225,15 @@ defmodule Coscul.DataTest do
     end
 
     test "create_output_term/1 with valid data creates a output_term" do
-      assert {:ok, %OutputTerm{} = output_term} = Data.create_output_term(@valid_attrs)
+      item = item_fixture()
+      recipe = recipe_fixture()
+
+      created_repo =
+        @valid_attrs
+        |> Map.merge(%{item_id: item.id, recipe_id: recipe.id})
+        |> Data.create_output_term()
+
+      assert {:ok, %OutputTerm{} = output_term} = created_repo
     end
 
     test "create_output_term/1 with invalid data returns error changeset" do
