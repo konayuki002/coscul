@@ -6,7 +6,7 @@ defmodule Coscul.Data do
   import Ecto.Query, warn: false
   alias Coscul.Repo
 
-  alias Coscul.Data.{Item, Recipe}
+  alias Coscul.Data.{Item, ItemRecipe, Recipe}
 
   @doc """
   Returns the list of items.
@@ -163,6 +163,66 @@ defmodule Coscul.Data do
     %Recipe{}
     |> Recipe.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, recipe} -> update_association(recipe, attrs)
+      {:error, _} = error_result -> error_result
+    end
+  end
+
+  defp update_association(recipe, attrs \\ %{}) do
+    recipe
+    |> preload(:items)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(
+      :items,
+      attrs |> list_item_ids_in_attrs |> fetch_items_in_terms()
+    )
+    |> Repo.update()
+    |> case do
+      {:ok, recipe} -> update_terms_value(recipe, attrs)
+      {:error, _} = error_result -> error_result
+    end
+  end
+
+  defp fetch_items_in_terms(ids \\ []) do
+    Item |> where([item], item.id in ^ids) |> Repo.all()
+  end
+
+  defp update_terms_value(recipe, attrs) do
+    attrs
+    |> list_item_ids_in_attrs()
+    |> Enum.map(fn id ->
+      id |> get_item_recipe!() |> update_item_recipe(fetch_term_by_id(attrs.terms, id))
+    end)
+    |> Keyword.get(:error)
+    |> Kernel.not()
+    |> build_update_terms_result(recipe)
+  end
+
+  defp build_update_terms_result(nil, recipe) do
+    {:ok, recipe}
+  end
+
+  defp build_update_terms_result(error, recipe) do
+    {:error, error}
+  end
+
+  defp fetch_term_by_id(terms \\ [], id) do
+    Enum.find(terms, &(id == &1.item_id))
+  end
+
+  defp get_item_recipe!(id) do
+    Repo.get!(ItemRecipe, id)
+  end
+
+  defp update_item_recipe(%ItemRecipe{} = item_recipe, attrs) do
+    item_recipe
+    |> ItemRecipe.changeset(attrs)
+    |> Repo.update()
+  end
+
+  defp list_item_ids_in_attrs(attrs \\ %{}) do
+    Enum.map(attrs.terms, &Map.get(&1, :item_id))
   end
 
   @doc """
@@ -181,6 +241,10 @@ defmodule Coscul.Data do
     recipe
     |> Recipe.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, recipe} -> update_association(recipe, attrs)
+      {:error, _} = error_result -> error_result
+    end
   end
 
   @doc """
