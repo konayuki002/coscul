@@ -6,7 +6,7 @@ defmodule Coscul.Data do
   import Ecto.Query, warn: false
   alias Coscul.Repo
 
-  alias Coscul.Data.{Item, Term, Recipe}
+  alias Coscul.Data.{Item, Recipe}
 
   @doc """
   Returns the list of items.
@@ -19,7 +19,6 @@ defmodule Coscul.Data do
   """
   def list_items do
     Item
-    |> preload([:terms])
     |> Repo.all()
   end
 
@@ -38,7 +37,7 @@ defmodule Coscul.Data do
 
   """
   def get_item!(id) do
-    Item |> preload([:terms]) |> Repo.get!(id)
+    Repo.get!(Item, id)
   end
 
   @doc """
@@ -57,10 +56,6 @@ defmodule Coscul.Data do
     %Item{}
     |> Item.changeset(attrs)
     |> Repo.insert()
-    |> case do
-      {:ok, item} -> {:ok, get_item!(item.id)}
-      {:error, _} = insert_result -> insert_result
-    end
   end
 
   @doc """
@@ -94,12 +89,6 @@ defmodule Coscul.Data do
 
   """
   def delete_item(%Item{} = item) do
-    Term
-    |> where(item_id: ^item.id)
-    |> Repo.all()
-    |> Enum.map(&get_recipe!(&1.recipe_id))
-    |> Enum.each(&delete_recipe(&1))
-
     Repo.delete(item)
   end
 
@@ -127,8 +116,17 @@ defmodule Coscul.Data do
   """
   def list_recipes do
     Recipe
-    |> preload([:terms])
+    |> preload([:items_recipes])
     |> Repo.all()
+    |> Enum.map(&load_items_in_recipe/1)
+  end
+
+  defp load_items_in_recipe(recipe) do
+    Map.put(recipe, :items_recipes, load_items_in_items_recipes(recipe))
+  end
+
+  defp load_items_in_items_recipes(recipe) do
+    recipe |> Map.get(:items_recipes) |> Enum.map(&Repo.preload(&1, :item))
   end
 
   @doc """
@@ -146,7 +144,7 @@ defmodule Coscul.Data do
 
   """
   def get_recipe!(id) do
-    Recipe |> preload([:terms]) |> Repo.get!(id)
+    Recipe |> preload([:items_recipes]) |> Repo.get!(id) |> load_items_in_recipe()
   end
 
   @doc """
@@ -165,29 +163,6 @@ defmodule Coscul.Data do
     %Recipe{}
     |> Recipe.changeset(attrs)
     |> Repo.insert()
-    |> case do
-      {:ok, recipe} -> attrs |> Map.get(:terms) |> create_related_terms(recipe)
-      {:error, _} = insert_result -> insert_result
-    end
-  end
-
-  defp create_related_terms(nil, recipe) do
-    {:ok, get_recipe!(recipe.id)}
-  end
-
-  defp create_related_terms(term_attrs, recipe) do
-    term_attrs
-    |> Enum.map(&Map.put_new(&1, :recipe_id, recipe.id))
-    |> Enum.map(&create_term(&1))
-    |> Keyword.get(:error)
-    |> check_created_terms_with_rollback(recipe)
-  end
-
-  defp check_created_terms_with_rollback(nil, recipe), do: {:ok, get_recipe!(recipe.id)}
-
-  defp check_created_terms_with_rollback(error_message, recipe) do
-    delete_recipe(recipe)
-    {:error, error_message}
   end
 
   @doc """
@@ -235,98 +210,5 @@ defmodule Coscul.Data do
   """
   def change_recipe(%Recipe{} = recipe) do
     Recipe.changeset(recipe, %{})
-  end
-
-  alias Coscul.Data.Term
-
-  @doc """
-  Returns the list of terms.
-
-  ## Examples
-
-      iex> list_terms()
-      [%Term{}, ...]
-
-  """
-  def list_terms do
-    Repo.all(Term)
-  end
-
-  @doc """
-  Gets a single term.
-
-  Raises if the Term does not exist.
-
-  ## Examples
-
-      iex> get_term!(123)
-      %Term{}
-
-  """
-  def get_term!(id), do: Repo.get!(Term, id)
-
-  @doc """
-  Creates a term.
-
-  ## Examples
-
-      iex> create_term(%{field: value})
-      {:ok, %Term{}}
-
-      iex> create_term(%{field: bad_value})
-      {:error, ...}
-
-  """
-  def create_term(attrs \\ %{}) do
-    %Term{}
-    |> Term.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a term.
-
-  ## Examples
-
-      iex> update_term(term, %{field: new_value})
-      {:ok, %Term{}}
-
-      iex> update_term(term, %{field: bad_value})
-      {:error, ...}
-
-  """
-  def update_term(%Term{} = term, attrs) do
-    term
-    |> Term.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a Term.
-
-  ## Examples
-
-      iex> delete_term(term)
-      {:ok, %Term{}}
-
-      iex> delete_term(term)
-      {:error, ...}
-
-  """
-  def delete_term(%Term{} = term) do
-    Repo.delete(term)
-  end
-
-  @doc """
-  Returns a data structure for tracking term changes.
-
-  ## Examples
-
-      iex> change_term(term)
-      %Todo{...}
-
-  """
-  def change_term(%Term{} = term) do
-    Term.changeset(term, %{})
   end
 end
