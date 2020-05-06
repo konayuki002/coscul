@@ -1,11 +1,15 @@
 defmodule Coscul.Data.Recipe do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Coscul.Data.Term
+  alias Coscul.Data.Item
 
   schema "recipes" do
     field :time, :float
-    field :terms, {:array, :map}
+
+    embeds_many :terms, Term do
+      field :value, :integer
+      field :item_id, :integer
+    end
 
     timestamps()
   end
@@ -14,6 +18,12 @@ defmodule Coscul.Data.Recipe do
   def changeset(recipe, attrs) do
     recipe
     |> cast(attrs, [:time])
+    |> cast_embed(:terms, with: &child_changeset/2)
     |> validate_required([:time])
+  end
+
+  defp child_changeset(schema, params) do
+    schema
+    |> cast(params, [:value, :item_id])
   end
 end

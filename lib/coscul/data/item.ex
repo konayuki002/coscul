@@ -1,12 +1,10 @@
 defmodule Coscul.Data.Item do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Coscul.Data.Term
 
   schema "items" do
     field :name, :string
     field :stack, :integer
-    has_many :terms, Term
 
     timestamps()
   end

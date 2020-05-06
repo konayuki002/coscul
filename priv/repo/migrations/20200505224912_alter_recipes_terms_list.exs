@@ -3,7 +3,7 @@ defmodule Coscul.Repo.Migrations.AlterRecipesTermsList do
 
   def change do
     alter table("recipes") do
-      add :terms, {:array, :map}
+      add :terms, {:array, :map}, default: []
     end
   end
 end
