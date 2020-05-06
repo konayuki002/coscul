@@ -12,9 +12,9 @@ defmodule Coscul.Data.ItemRecipe do
   end
 
   @doc false
-  def changeset(item, attrs) do
-    item
-    |> cast(attrs, [:name, :stack])
-    |> validate_required([:name, :stack])
+  def changeset(item_recipe, attrs) do
+    item_recipe
+    |> cast(attrs, [:value, :item_id, :recipe_id])
+    |> validate_required([:value, :item_id, :recipe_id])
   end
 end
