@@ -1,7 +1,6 @@
 defmodule Coscul.Data.Recipe do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Coscul.Data.Item
 
   schema "recipes" do
     field :time, :float

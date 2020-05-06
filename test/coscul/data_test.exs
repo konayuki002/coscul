@@ -70,12 +70,19 @@ defmodule Coscul.DataTest do
     @invalid_attrs %{time: nil}
 
     def recipe_fixture(attrs \\ %{}) do
+      item = item_fixture()
+
       {:ok, recipe} =
         attrs
+        |> Enum.into(term_fixture(item))
         |> Enum.into(@valid_attrs)
         |> Data.create_recipe()
 
       recipe
+    end
+
+    def term_fixture(item) do
+      %{terms: [%{item_id: item.id, value: 1}]}
     end
 
     test "list_recipes/0 returns all recipes" do
