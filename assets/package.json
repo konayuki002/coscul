@@ -9,7 +9,8 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "vue": "^2.6.11",
-    "vuejs": "^3.0.1"
+    "vue-loader": "15.9.1",
+    "vue-template-compiler": "^2.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
