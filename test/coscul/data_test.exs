@@ -84,7 +84,7 @@ defmodule Coscul.DataTest do
     end
 
     test "get_recipe!/1 returns the recipe with given id" do
-      recipe = recipe_fixture() |> Map.put(:items_recipes, [])
+      recipe = recipe_fixture() |> Map.put(:items_recipes, []) |> Map.put(:items, [])
       assert Data.get_recipe!(recipe.id) == recipe
     end
 
@@ -104,7 +104,7 @@ defmodule Coscul.DataTest do
     end
 
     test "update_recipe/2 with invalid data returns error changeset" do
-      recipe = recipe_fixture() |> Map.put(:items_recipes, [])
+      recipe = recipe_fixture() |> Map.put(:items_recipes, []) |> Map.put(:items, [])
       assert {:error, %Ecto.Changeset{}} = Data.update_recipe(recipe, @invalid_attrs)
       assert recipe == Data.get_recipe!(recipe.id)
     end

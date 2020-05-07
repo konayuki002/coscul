@@ -169,9 +169,9 @@ defmodule Coscul.Data do
     end
   end
 
-  defp update_association(recipe, attrs \\ %{}) do
+  defp update_association(recipe, attrs) do
     recipe
-    |> preload(:items)
+    |> Repo.preload(:items)
     |> Ecto.Changeset.change()
     |> Ecto.Changeset.put_assoc(
       :items,
@@ -184,7 +184,7 @@ defmodule Coscul.Data do
     end
   end
 
-  defp fetch_items_in_terms(ids \\ []) do
+  defp fetch_items_in_terms(ids) do
     Item |> where([item], item.id in ^ids) |> Repo.all()
   end
 
@@ -195,7 +195,6 @@ defmodule Coscul.Data do
       id |> get_item_recipe!() |> update_item_recipe(fetch_term_by_id(attrs.terms, id))
     end)
     |> Keyword.get(:error)
-    |> Kernel.not()
     |> build_update_terms_result(recipe)
   end
 
@@ -203,11 +202,11 @@ defmodule Coscul.Data do
     {:ok, recipe}
   end
 
-  defp build_update_terms_result(error, recipe) do
+  defp build_update_terms_result(error, _recipe) do
     {:error, error}
   end
 
-  defp fetch_term_by_id(terms \\ [], id) do
+  defp fetch_term_by_id(terms, id) do
     Enum.find(terms, &(id == &1.item_id))
   end
 
@@ -221,9 +220,11 @@ defmodule Coscul.Data do
     |> Repo.update()
   end
 
-  defp list_item_ids_in_attrs(attrs \\ %{}) do
-    Enum.map(attrs.terms, &Map.get(&1, :item_id))
+  defp list_item_ids_in_attrs(%{terms: terms}) do
+    Enum.map(terms, &Map.get(&1, :item_id))
   end
+
+  defp list_item_ids_in_attrs(_), do: []
 
   @doc """
   Updates a recipe.
