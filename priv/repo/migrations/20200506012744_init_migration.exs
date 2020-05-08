@@ -24,10 +24,12 @@ defmodule Coscul.Repo.Migrations.InitMigration do
   end
 
   def down do
+    drop_if_exists unique_index(:recipe_terms, [:item_id, :recipe_id])
+
+    drop_if_exists table(:recipe_terms)
+
     drop_if_exists table(:items)
 
     drop_if_exists table(:recipes)
-
-    drop_if_exists table(:recipe_terms)
   end
 end

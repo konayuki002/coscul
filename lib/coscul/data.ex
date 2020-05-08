@@ -4,8 +4,9 @@ defmodule Coscul.Data do
   """
 
   import Ecto.Query, warn: false
-  alias Coscul.Repo
+  alias Ecto.Multi
 
+  alias Coscul.Repo
   alias Coscul.Data.{Item, RecipeTerm, Recipe}
 
   @doc """
@@ -169,29 +170,30 @@ defmodule Coscul.Data do
       {:error, %Ecto.Changeset{}}
 
   """
-  @spec create_recipe(map()) :: {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_recipe(map()) ::
+          {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()} | {:error, any(), any(), any()}
   def create_recipe(attrs) do
-    Repo.transaction(fn ->
-      recipe =
-        %Recipe{}
-        |> Recipe.changeset(attrs)
-        |> Repo.insert!()
-        |> update_association!(attrs)
-        |> update_recipe_terms_value!(attrs)
-
-      recipe
-    end)
+    Multi.new()
+    |> Multi.insert(:recipe_not_associated, Recipe.changeset(%Recipe{}, attrs))
+    |> update_association(attrs)
+    |> update_recipe_terms_value(attrs)
+    |> Repo.transaction()
   end
 
-  defp update_association!(recipe, %{recipe_terms: recipe_term_attrs}) do
-    recipe
-    |> Repo.preload(:items)
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(
-      :items,
-      fetch_items_by_recipe_term_attrs(recipe_term_attrs)
-    )
-    |> Repo.update!()
+  defp update_association(multi, %{recipe_terms: recipe_term_attrs}) do
+    multi
+    |> Multi.update(:recipe_not_preloaded, fn %{recipe_not_associated: recipe} ->
+      recipe
+      |> Repo.preload(:items)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(
+        :items,
+        fetch_items_by_recipe_term_attrs(recipe_term_attrs)
+      )
+    end)
+    |> Multi.run(:recipe, fn _repo, %{recipe_not_preloaded: recipe} ->
+      Recipe |> preload(:recipe_terms) |> Repo.get(recipe.id)
+    end)
   end
 
   defp fetch_items_by_recipe_term_attrs(recipe_term_attrs) do
@@ -204,31 +206,19 @@ defmodule Coscul.Data do
     Enum.map(recipe_term_attrs, &Map.get(&1, :item_id))
   end
 
-  defp update_recipe_terms_value!(recipe, %{recipe_terms: recipe_term_attrs}) do
-    recipe_term_attrs
-    |> list_item_ids_in_recipe_term_attrs()
-    |> Enum.map(fn item_id ->
-      update_recipe_term!(
-        get_recipe_term!(recipe, item_id),
-        fetch_recipe_term_attrs_by_id(recipe_term_attrs, item_id)
-      )
+  defp update_recipe_terms_value(multi, %{recipe_terms: recipe_terms_attrs}) do
+    recipe_terms_attrs
+    |> Enum.reduce(multi, fn recipe_term_attrs, multi ->
+      Multi.update(multi, :recipe_term, fn %{recipe: recipe} ->
+        build_recipe_term_changeset_by_recipe(recipe, recipe_term_attrs)
+      end)
     end)
   end
 
-  defp fetch_recipe_term_attrs_by_id(recipe_terms, id) do
-    Enum.find(recipe_terms, &(id == &1.item_id))
-  end
-
-  defp get_recipe_term!(recipe, item_id) do
-    RecipeTerm
-    |> where(recipe_id: ^recipe.id, item_id: ^item_id)
-    |> Repo.one!()
-  end
-
-  defp update_recipe_term!(%RecipeTerm{} = recipe_term, attrs) do
-    recipe_term
-    |> RecipeTerm.changeset(attrs)
-    |> Repo.update!()
+  defp build_recipe_term_changeset_by_recipe(recipe, recipe_term_attrs) do
+    recipe.recipe_terms
+    |> Enum.find(fn recipe_term -> recipe_term.id == recipe_term_attrs.id end)
+    |> RecipeTerm.changeset(recipe_term_attrs)
   end
 
   @doc """
@@ -245,13 +235,11 @@ defmodule Coscul.Data do
   """
   @spec update_recipe(Recipe.t(), map()) :: {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
   def update_recipe(%Recipe{} = recipe, attrs) do
-    Repo.transaction(fn ->
-      recipe
-      |> Recipe.changeset(attrs)
-      |> Repo.update!()
-      |> update_association!(attrs)
-      |> update_recipe_terms_value!(attrs)
-    end)
+    Multi.new()
+    |> Multi.insert(:recipe, Recipe.changeset(recipe, attrs))
+    |> update_association(attrs)
+    |> update_recipe_terms_value(attrs)
+    |> Repo.transaction()
   end
 
   @doc """

@@ -65,8 +65,8 @@ defmodule Coscul.DataTest do
   describe "recipes" do
     alias Coscul.Data.Recipe
 
-    @valid_attrs %{time: 120.5}
-    @update_attrs %{time: 456.7}
+    @valid_attrs %{time: 120.5, recipe_terms: []}
+    @update_attrs %{time: 456.7, recipe_terms: []}
     @invalid_attrs %{time: nil}
 
     def recipe_fixture(attrs \\ %{}) do
