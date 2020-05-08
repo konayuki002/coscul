@@ -1,9 +1,15 @@
-defmodule Coscul.Data.ItemRecipe do
+defmodule Coscul.Data.RecipeTerm do
   use Ecto.Schema
   import Ecto.Changeset
   alias Coscul.Data.{Item, Recipe}
 
-  schema "items_recipes" do
+  @type t :: %__MODULE__{
+          value: integer(),
+          item: Item.t(),
+          recipe: Recipe.t()
+        }
+
+  schema "recipe_terms" do
     field :value, :integer
     belongs_to :item, Item
     belongs_to :recipe, Recipe
@@ -12,8 +18,8 @@ defmodule Coscul.Data.ItemRecipe do
   end
 
   @doc false
-  def changeset(item_recipe, attrs) do
-    item_recipe
+  def changeset(recipe_term, attrs) do
+    recipe_term
     |> cast(attrs, [:value, :item_id, :recipe_id])
     |> validate_required([:value, :item_id, :recipe_id])
   end

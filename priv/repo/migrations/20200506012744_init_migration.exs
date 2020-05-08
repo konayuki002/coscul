@@ -13,14 +13,14 @@ defmodule Coscul.Repo.Migrations.InitMigration do
       timestamps()
     end
 
-    create_if_not_exists table(:items_recipes) do
+    create_if_not_exists table(:recipe_terms) do
       add :item_id, references(:items)
       add :recipe_id, references(:recipes)
       add :value, :integer
       timestamps()
     end
 
-    create_if_not_exists unique_index(:items_recipes, [:item_id, :recipe_id, :value])
+    create_if_not_exists unique_index(:recipe_terms, [:item_id, :recipe_id])
   end
 
   def down do
@@ -28,6 +28,6 @@ defmodule Coscul.Repo.Migrations.InitMigration do
 
     drop_if_exists table(:recipes)
 
-    drop_if_exists table(:items_recipes)
+    drop_if_exists table(:recipe_terms)
   end
 end
