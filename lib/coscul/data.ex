@@ -172,11 +172,14 @@ defmodule Coscul.Data do
   @spec create_recipe(map()) :: {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
   def create_recipe(attrs) do
     Repo.transaction(fn ->
-      %Recipe{}
-      |> Recipe.changeset(attrs)
-      |> Repo.insert!()
-      |> update_association!(attrs)
-      |> update_recipe_terms_value!(attrs)
+      recipe =
+        %Recipe{}
+        |> Recipe.changeset(attrs)
+        |> Repo.insert!()
+        |> update_association!(attrs)
+        |> update_recipe_terms_value!(attrs)
+
+      recipe
     end)
   end
 
