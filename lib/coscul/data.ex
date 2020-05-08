@@ -124,19 +124,8 @@ defmodule Coscul.Data do
   @spec list_recipes() :: list(Recipe.t())
   def list_recipes do
     Recipe
-    |> preload([:recipe_terms])
+    |> preload([{:recipe_terms, :item}])
     |> Repo.all()
-    |> Enum.map(&load_items_in_recipe/1)
-  end
-
-  defp load_items_in_recipe(nil), do: nil
-
-  defp load_items_in_recipe(recipe) do
-    Map.put(recipe, :recipe_terms, load_items_in_recipe_terms(recipe))
-  end
-
-  defp load_items_in_recipe_terms(recipe) do
-    recipe |> Map.get(:recipe_terms) |> Enum.map(&Repo.preload(&1, :item))
   end
 
   @doc """
@@ -155,7 +144,7 @@ defmodule Coscul.Data do
   """
   @spec get_recipe(integer()) :: Recipe.t() | nil
   def get_recipe(id) do
-    Recipe |> preload([:recipe_terms]) |> Repo.get(id) |> load_items_in_recipe()
+    Recipe |> preload([{:recipe_terms, :item}]) |> Repo.get(id)
   end
 
   @doc """
@@ -171,54 +160,11 @@ defmodule Coscul.Data do
 
   """
   @spec create_recipe(map()) ::
-          {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()} | {:error, any(), any(), any()}
+          {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
   def create_recipe(attrs) do
-    Multi.new()
-    |> Multi.insert(:recipe_not_associated, Recipe.changeset(%Recipe{}, attrs))
-    |> update_association(attrs)
-    |> update_recipe_terms_value(attrs)
-    |> Repo.transaction()
-  end
-
-  defp update_association(multi, %{recipe_terms: recipe_term_attrs}) do
-    multi
-    |> Multi.update(:recipe_not_preloaded, fn %{recipe_not_associated: recipe} ->
-      recipe
-      |> Repo.preload(:items)
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.put_assoc(
-        :items,
-        fetch_items_by_recipe_term_attrs(recipe_term_attrs)
-      )
-    end)
-    |> Multi.run(:recipe, fn _repo, %{recipe_not_preloaded: recipe} ->
-      Recipe |> preload(:recipe_terms) |> Repo.get(recipe.id)
-    end)
-  end
-
-  defp fetch_items_by_recipe_term_attrs(recipe_term_attrs) do
-    Item
-    |> where([item], item.id in ^list_item_ids_in_recipe_term_attrs(recipe_term_attrs))
-    |> Repo.all()
-  end
-
-  defp list_item_ids_in_recipe_term_attrs(recipe_term_attrs) do
-    Enum.map(recipe_term_attrs, &Map.get(&1, :item_id))
-  end
-
-  defp update_recipe_terms_value(multi, %{recipe_terms: recipe_terms_attrs}) do
-    recipe_terms_attrs
-    |> Enum.reduce(multi, fn recipe_term_attrs, multi ->
-      Multi.update(multi, :recipe_term, fn %{recipe: recipe} ->
-        build_recipe_term_changeset_by_recipe(recipe, recipe_term_attrs)
-      end)
-    end)
-  end
-
-  defp build_recipe_term_changeset_by_recipe(recipe, recipe_term_attrs) do
-    recipe.recipe_terms
-    |> Enum.find(fn recipe_term -> recipe_term.id == recipe_term_attrs.id end)
-    |> RecipeTerm.changeset(recipe_term_attrs)
+    %Recipe{}
+    |> Recipe.changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -235,11 +181,9 @@ defmodule Coscul.Data do
   """
   @spec update_recipe(Recipe.t(), map()) :: {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
   def update_recipe(%Recipe{} = recipe, attrs) do
-    Multi.new()
-    |> Multi.insert(:recipe, Recipe.changeset(recipe, attrs))
-    |> update_association(attrs)
-    |> update_recipe_terms_value(attrs)
-    |> Repo.transaction()
+    recipe
+    |> Recipe.changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -256,6 +200,7 @@ defmodule Coscul.Data do
   """
   @spec delete_recipe(Recipe.t()) :: {:ok, Recipe.t()} | {:error, Ecto.Changeset.t()}
   def delete_recipe(%Recipe{} = recipe) do
+    delete_recipe_terms(recipe.id)
     Repo.delete(recipe)
   end
 
@@ -271,5 +216,45 @@ defmodule Coscul.Data do
   @spec change_recipe(Recipe.t()) :: Ecto.Changeset.t()
   def change_recipe(%Recipe{} = recipe) do
     Recipe.changeset(recipe, %{})
+  end
+
+  def update_recipe_term_list(recipe_id, %{recipe_terms: recipe_term_attrs_list}) do
+    Enum.map(recipe_term_attrs_list, &upsert_recipe_term(&1))
+
+    RecipeTerm
+    |> filter_query_by_recipe_id(recipe_id)
+    |> reject_query_in_attrs_list(recipe_term_attrs_list)
+    |> Repo.delete_all()
+  end
+
+  defp filter_query_by_recipe_id(query, recipe_id) do
+    where(query, recipe_id: ^recipe_id)
+  end
+
+  defp reject_query_in_attrs_list(query, recipe_term_attrs_list) do
+    where(query, [r], not (r.id in ^fetch_id_in_map_list(recipe_term_attrs_list)))
+  end
+
+  defp fetch_id_in_map_list(map_list) do
+    Enum.map(map_list, &Map.get(&1, :id))
+  end
+
+  defp upsert_recipe_term(%{id: id} = recipe_term_attrs) do
+    RecipeTerm
+    |> Repo.get!(id)
+    |> RecipeTerm.changeset(recipe_term_attrs)
+    |> Repo.update!()
+  end
+
+  defp upsert_recipe_term(attrs) do
+    %RecipeTerm{}
+    |> RecipeTerm.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  defp delete_recipe_terms(recipe_id) do
+    RecipeTerm
+    |> filter_query_by_recipe_id(recipe_id)
+    |> Repo.delete_all()
   end
 end

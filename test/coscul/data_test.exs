@@ -120,4 +120,63 @@ defmodule Coscul.DataTest do
       assert %Ecto.Changeset{} = Data.change_recipe(recipe)
     end
   end
+
+  describe "recipe_terms" do
+    alias Coscul.Data.RecipeTerm
+
+    @valid_attrs %{value: 42}
+    @update_attrs %{value: 43}
+    @invalid_attrs %{value: nil}
+
+    def recipe_term_fixture(attrs \\ %{}) do
+      {:ok, recipe_term} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Data.create_recipe_term()
+
+      recipe_term
+    end
+
+    test "list_recipe_terms/0 returns all recipe_terms" do
+      recipe_term = recipe_term_fixture()
+      assert Data.list_recipe_terms() == [recipe_term]
+    end
+
+    test "get_recipe_term!/1 returns the recipe_term with given id" do
+      recipe_term = recipe_term_fixture()
+      assert Data.get_recipe_term!(recipe_term.id) == recipe_term
+    end
+
+    test "create_recipe_term/1 with valid data creates a recipe_term" do
+      assert {:ok, %RecipeTerm{} = recipe_term} = Data.create_recipe_term(@valid_attrs)
+      assert recipe_term.value == 42
+    end
+
+    test "create_recipe_term/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Data.create_recipe_term(@invalid_attrs)
+    end
+
+    test "update_recipe_term/2 with valid data updates the recipe_term" do
+      recipe_term = recipe_term_fixture()
+      assert {:ok, %RecipeTerm{} = recipe_term} = Data.update_recipe_term(recipe_term, @update_attrs)
+      assert recipe_term.value == 43
+    end
+
+    test "update_recipe_term/2 with invalid data returns error changeset" do
+      recipe_term = recipe_term_fixture()
+      assert {:error, %Ecto.Changeset{}} = Data.update_recipe_term(recipe_term, @invalid_attrs)
+      assert recipe_term == Data.get_recipe_term!(recipe_term.id)
+    end
+
+    test "delete_recipe_term/1 deletes the recipe_term" do
+      recipe_term = recipe_term_fixture()
+      assert {:ok, %RecipeTerm{}} = Data.delete_recipe_term(recipe_term)
+      assert_raise Ecto.NoResultsError, fn -> Data.get_recipe_term!(recipe_term.id) end
+    end
+
+    test "change_recipe_term/1 returns a recipe_term changeset" do
+      recipe_term = recipe_term_fixture()
+      assert %Ecto.Changeset{} = Data.change_recipe_term(recipe_term)
+    end
+  end
 end
