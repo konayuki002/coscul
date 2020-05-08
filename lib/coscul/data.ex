@@ -37,9 +37,9 @@ defmodule Coscul.Data do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_item(integer()) :: Item.t() | nil
-  def get_item(id) do
-    Repo.get(Item, id)
+  @spec get_item!(integer()) :: Item.t() | nil
+  def get_item!(id) do
+    Repo.get!(Item, id)
   end
 
   @doc """
