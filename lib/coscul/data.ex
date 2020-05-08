@@ -205,11 +205,9 @@ defmodule Coscul.Data do
     Enum.map(recipe_term_attrs, &Map.get(&1, :item_id))
   end
 
-  # todo: recipe_idとitem_idからTermを取得.
   defp update_recipe_terms_value(recipe, recipe_term_attrs) do
     recipe_term_attrs
     |> list_item_ids_in_recipe_term_attrs()
-    # ここらへんをEcto.Multiで(別の関数に吐き出してもよい) reduceと組み合わせる
     |> Enum.reduce(Ecto.Multi.new(), fn item_id, multi ->
       update_recipe_term(
         multi,
