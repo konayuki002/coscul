@@ -209,7 +209,7 @@ defmodule Coscul.Data do
     recipe_term_attrs
     |> list_item_ids_in_recipe_term_attrs()
     |> Enum.reduce(Ecto.Multi.new(), fn item_id, multi ->
-      update_recipe_term(
+      update_multi_recipe_term(
         multi,
         get_recipe_term!(recipe, item_id),
         fetch_recipe_term_attrs_by_id(recipe_term_attrs, item_id)
@@ -227,7 +227,7 @@ defmodule Coscul.Data do
     |> Repo.one!()
   end
 
-  defp update_recipe_term(multi, %RecipeTerm{} = recipe_term, attrs) do
+  defp update_multi_recipe_term(multi, %RecipeTerm{} = recipe_term, attrs) do
     Ecto.Multi.update(multi, :update, RecipeTerm.changeset(recipe_term, attrs))
   end
 
