@@ -6,6 +6,29 @@
     <strong>Time:</strong>
     <%= @recipe.time %>
   </li>
+  <li>
+    <strong>Terms:</strong>
+    <table>
+      <thead>
+        <tr>
+          <th>Value</th>
+          <th>Item</th>
+        </tr>
+      </thead>
+      <tbody>
+      <%= for recipe_term <- (Map.get(@recipe, :recipe_terms, nil) || []) do %>
+        <tr>
+          <td><%= recipe_term.value %></td>
+          <td><%= recipe_term.item.name %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <strong>Recipe Category:</strong>
+    <%= @recipe.recipe_category.name %>
+  </li>
 
 </ul>
 

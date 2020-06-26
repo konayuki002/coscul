@@ -1,0 +1,17 @@
+<h1>Show Recipe Term</h1>
+
+<ul>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @recipe_term.value %>
+  </li>
+  <li>
+    <strong>Item:</strong>
+    <%= @recipe_term.item.name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.recipe_term_path(@conn, :edit, @recipe_term) %></span>
+<span><%= link "Back", to: Routes.recipe_term_path(@conn, :index) %></span>

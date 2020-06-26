@@ -19,6 +19,9 @@ defmodule CosculWeb.Router do
     get "/", PageController, :index
     resources "/items", ItemController
     resources "/recipes", RecipeController
+    resources "/recipe_terms", RecipeTermController
+    resources "/recipe_categories", RecipeCategoryController
+    resources "/factories", FactoryController
   end
 
   scope "/api", CosculWeb.Api, as: :api do

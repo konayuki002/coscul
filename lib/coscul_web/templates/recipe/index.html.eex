@@ -4,22 +4,34 @@
   <thead>
     <tr>
       <th>Time</th>
-
+      <th>Terms</th>
+      <th>Recipe Category</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
-<%= for recipe <- @recipes do %>
+  <%= for recipe <- @recipes do %>
     <tr>
       <td><%= recipe.time %></td>
-
+      <td>
+      <%= for recipe_term <- (Map.get(recipe, :recipe_terms, nil) || []) |> Enum.filter(fn x -> x.value < 0 end) do %>
+        <%= -recipe_term.value %>
+        <%= recipe_term.item.name %>
+      <% end %>
+      →
+      <%= for recipe_term <- (Map.get(recipe, :recipe_terms, nil) || []) |> Enum.filter(fn x -> x.value > 0 end) do %>
+        <%= recipe_term.value %>
+        <%= recipe_term.item.name %>
+      <% end %>
+      </td>
+      <td><%= recipe.recipe_category.name %></td>
       <td>
         <span><%= link "Show", to: Routes.recipe_path(@conn, :show, recipe) %></span>
         <span><%= link "Edit", to: Routes.recipe_path(@conn, :edit, recipe) %></span>
         <span><%= link "Delete", to: Routes.recipe_path(@conn, :delete, recipe), method: :delete, data: [confirm: "Are you sure?"] %></span>
       </td>
     </tr>
-<% end %>
+  <% end %>
   </tbody>
 </table>
 

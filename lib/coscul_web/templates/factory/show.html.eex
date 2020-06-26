@@ -1,0 +1,18 @@
+<h1>Show Factory</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @factory.name %>
+  </li>
+
+  <li>
+    <strong>Can input liquid:</strong>
+    <%= @factory.can_input_liquid %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.factory_path(@conn, :edit, @factory) %></span>
+<span><%= link "Back", to: Routes.factory_path(@conn, :index) %></span>

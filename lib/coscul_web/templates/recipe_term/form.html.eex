@@ -1,0 +1,23 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+    recipe_id: <%= @changeset.data.recipe_id %>
+    <%= label f, :recipe_id %>
+    <%= select f, :recipe_id, Enum.map(@recipes, fn(x) -> {x.id, x.id} end), seleceted: :item_id%>
+    <%= error_tag f, :value %>
+
+    <%= label f, :value %>
+    <%= number_input f, :value, step: 1 %>
+    <%= error_tag f, :value %>
+
+    <%= label f, :item_id %>
+    <%= select f, :item_id, Enum.map(@items, fn(x) -> {x.name, x.id} end), seleceted: :item_id%>
+    <%= error_tag f, :item_id%>
+  
+  <div>
+    <%= submit "Save Recipe Term" %>
+  </div>
+<% end %>

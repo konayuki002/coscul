@@ -75,6 +75,7 @@ defmodule CosculWeb.RecipeControllerTest do
     test "deletes chosen recipe", %{conn: conn, recipe: recipe} do
       conn = delete(conn, Routes.recipe_path(conn, :delete, recipe))
       assert redirected_to(conn) == Routes.recipe_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.recipe_path(conn, :show, recipe))
       end

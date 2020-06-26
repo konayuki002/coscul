@@ -5,6 +5,7 @@
     <tr>
       <th>Name</th>
       <th>Stack</th>
+      <th>Is liquid</th>
       <th></th>
     </tr>
   </thead>
@@ -13,6 +14,7 @@
     <tr>
       <td><%= item.name %></td>
       <td><%= item.stack %></td>
+      <td><%= item.is_liquid %></td>
 
       <td>
         <span><%= link "Show", to: Routes.item_path(@conn, :show, item) %></span>

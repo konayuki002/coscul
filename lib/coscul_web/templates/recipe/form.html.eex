@@ -9,7 +9,37 @@
   <%= number_input f, :time, step: "any" %>
   <%= error_tag f, :time %>
 
-  <div>
-    <%= submit "Save" %>
-  </div>
+  <%= label f, :recipe_category_id %>
+  <%= select f, :recipe_category_id, Enum.map(@recipe_categories, fn(x) -> {x.name, x.id} end), seleceted: :recipe_category_id%>
+  <%= error_tag f, :recipe_category_id%>
+
+<strong>Terms</strong>
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Item</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for recipe_term <- (Map.get(@changeset.data, :recipe_terms, nil) || []) do %>
+    <tr>
+      <td><%= recipe_term.value %></td>
+      <td><%= recipe_term.item.name %></td>
+      <td>
+        <span><%= link "Edit", to: Routes.recipe_term_path(@conn, :edit, recipe_term) %></span>
+        <span><%= link "Delete", to: Routes.recipe_term_path(@conn, :delete, recipe_term), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Recipe term", to: Routes.recipe_term_path(@conn, :new, recipe_id: @changeset.data.id) %></span>
+
+<div>
+  <%= submit "Save" %>
+</div>
 <% end %>

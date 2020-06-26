@@ -1,0 +1,5 @@
+<h1>Edit Recipe term</h1>
+
+<%= render "form.html", Map.put(assigns, :action, Routes.recipe_term_path(@conn, :update, @recipe_term)) %>
+
+<span><%= link "Back", to: Routes.recipe_path(@conn, :edit, @recipe_term.recipe_id) %></span>

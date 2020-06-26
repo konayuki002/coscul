@@ -1,0 +1,13 @@
+<h1>Show Recipe category</h1>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @recipe_category.name %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.recipe_category_path(@conn, :edit, @recipe_category) %></span>
+<span><%= link "Back", to: Routes.recipe_category_path(@conn, :index) %></span>

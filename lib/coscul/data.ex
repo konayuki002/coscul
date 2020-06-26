@@ -4,10 +4,9 @@ defmodule Coscul.Data do
   """
 
   import Ecto.Query, warn: false
-  alias Ecto.Multi
 
   alias Coscul.Repo
-  alias Coscul.Data.{Item, RecipeTerm, Recipe}
+  alias Coscul.Data.{Item, RecipeTerm, Recipe, RecipeCategory, Factory}
 
   @doc """
   Returns the list of items.
@@ -124,7 +123,7 @@ defmodule Coscul.Data do
   @spec list_recipes() :: list(Recipe.t())
   def list_recipes do
     Recipe
-    |> preload([{:recipe_terms, :item}])
+    |> preload([{:recipe_terms, :item}, :recipe_category])
     |> Repo.all()
   end
 
@@ -142,9 +141,11 @@ defmodule Coscul.Data do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_recipe(integer()) :: Recipe.t() | nil
-  def get_recipe(id) do
-    Recipe |> preload([{:recipe_terms, :item}]) |> Repo.get(id)
+  @spec get_recipe!(integer()) :: Recipe.t()
+  def get_recipe!(id) do
+    Recipe
+    |> preload([{:recipe_terms, :item}, :recipe_category])
+    |> Repo.get!(id)
   end
 
   @doc """
@@ -243,7 +244,7 @@ defmodule Coscul.Data do
     RecipeTerm
     |> Repo.get!(id)
     |> RecipeTerm.changeset(recipe_term_attrs)
-    |> Repo.update!()
+    |> Repo.update()
   end
 
   defp upsert_recipe_term(attrs) do
@@ -256,5 +257,302 @@ defmodule Coscul.Data do
     RecipeTerm
     |> filter_query_by_recipe_id(recipe_id)
     |> Repo.delete_all()
+  end
+
+  alias Coscul.Data.RecipeTerm
+
+  @doc """
+  Returns the list of recipe_terms.
+
+  ## Examples
+
+      iex> list_recipe_terms()
+      [%RecipeTerm{}, ...]
+
+  """
+  def list_recipe_terms do
+    RecipeTerm
+    |> preload([:item, :recipe])
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets a single recipe_term.
+
+  Raises if the Recipe term does not exist.
+
+  ## Examples
+
+      iex> get_recipe_term!(123)
+      %RecipeTerm{}
+
+  """
+  def get_recipe_term!(id) do
+    RecipeTerm
+    |> preload([:item, :recipe])
+    |> Repo.get!(id)
+  end
+
+  @doc """
+  Creates a recipe_term.
+
+  ## Examples
+
+      iex> create_recipe_term(%{field: value})
+      {:ok, %RecipeTerm{}}
+
+      iex> create_recipe_term(%{field: bad_value})
+      {:error, ...}
+
+  """
+  def create_recipe_term(attrs \\ %{}) do
+    %RecipeTerm{}
+    |> RecipeTerm.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a recipe_term.
+
+  ## Examples
+
+      iex> update_recipe_term(recipe_term, %{field: new_value})
+      {:ok, %RecipeTerm{}}
+
+      iex> update_recipe_term(recipe_term, %{field: bad_value})
+      {:error, ...}
+
+  """
+  def update_recipe_term(%RecipeTerm{} = recipe_term, attrs) do
+    recipe_term
+    |> RecipeTerm.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a RecipeTerm.
+
+  ## Examples
+
+      iex> delete_recipe_term(recipe_term)
+      {:ok, %RecipeTerm{}}
+
+      iex> delete_recipe_term(recipe_term)
+      {:error, ...}
+
+  """
+  def delete_recipe_term(%RecipeTerm{} = recipe_term) do
+    Repo.delete(recipe_term)
+  end
+
+  @doc """
+  Returns a data structure for tracking recipe_term changes.
+
+  ## Examples
+
+      iex> change_recipe_term(recipe_term)
+      %Todo{...}
+
+  """
+  def change_recipe_term(%RecipeTerm{} = recipe_term) do
+    RecipeTerm.changeset(recipe_term, %{})
+  end
+
+  alias Coscul.Data.RecipeCategory
+
+  @doc """
+  Returns the list of recipe_categories.
+
+  ## Examples
+
+      iex> list_recipe_categories()
+      [%RecipeCategory{}, ...]
+
+  """
+  def list_recipe_categories do
+    Repo.all(RecipeCategory)
+  end
+
+  @doc """
+  Gets a single recipe_category.
+
+  Raises `Ecto.NoResultsError` if the Recipe category does not exist.
+
+  ## Examples
+
+      iex> get_recipe_category!(123)
+      %RecipeCategory{}
+
+      iex> get_recipe_category!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_recipe_category!(id), do: Repo.get!(RecipeCategory, id)
+
+  @doc """
+  Creates a recipe_category.
+
+  ## Examples
+
+      iex> create_recipe_category(%{field: value})
+      {:ok, %RecipeCategory{}}
+
+      iex> create_recipe_category(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_recipe_category(attrs \\ %{}) do
+    %RecipeCategory{}
+    |> RecipeCategory.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a recipe_category.
+
+  ## Examples
+
+      iex> update_recipe_category(recipe_category, %{field: new_value})
+      {:ok, %RecipeCategory{}}
+
+      iex> update_recipe_category(recipe_category, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_recipe_category(%RecipeCategory{} = recipe_category, attrs) do
+    recipe_category
+    |> RecipeCategory.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a recipe_category.
+
+  ## Examples
+
+      iex> delete_recipe_category(recipe_category)
+      {:ok, %RecipeCategory{}}
+
+      iex> delete_recipe_category(recipe_category)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_recipe_category(%RecipeCategory{} = recipe_category) do
+    Repo.delete(recipe_category)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking recipe_category changes.
+
+  ## Examples
+
+      iex> change_recipe_category(recipe_category)
+      %Ecto.Changeset{source: %RecipeCategory{}}
+
+  """
+  def change_recipe_category(%RecipeCategory{} = recipe_category) do
+    RecipeCategory.changeset(recipe_category, %{})
+  end
+
+  alias Coscul.Data.Factory
+
+  @doc """
+  Returns the list of factories.
+
+  ## Examples
+
+      iex> list_factories()
+      [%Factory{}, ...]
+
+  """
+  def list_factories do
+    Factory
+    |> preload([:recipe_category])
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets a single factory.
+
+  Raises `Ecto.NoResultsError` if the Factory does not exist.
+
+  ## Examples
+
+      iex> get_factory!(123)
+      %Factory{}
+
+      iex> get_factory!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_factory!(id) do
+    Factory
+    |> preload([:recipe_category])
+    |> Repo.get!(id)
+  end
+
+  @doc """
+  Creates a factory.
+
+  ## Examples
+
+      iex> create_factory(%{field: value})
+      {:ok, %Factory{}}
+
+      iex> create_factory(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_factory(attrs \\ %{}) do
+    %Factory{}
+    |> Factory.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a factory.
+
+  ## Examples
+
+      iex> update_factory(factory, %{field: new_value})
+      {:ok, %Factory{}}
+
+      iex> update_factory(factory, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_factory(%Factory{} = factory, attrs) do
+    factory
+    |> Factory.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a factory.
+
+  ## Examples
+
+      iex> delete_factory(factory)
+      {:ok, %Factory{}}
+
+      iex> delete_factory(factory)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_factory(%Factory{} = factory) do
+    Repo.delete(factory)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking factory changes.
+
+  ## Examples
+
+      iex> change_factory(factory)
+      %Ecto.Changeset{source: %Factory{}}
+
+  """
+  def change_factory(%Factory{} = factory) do
+    Factory.changeset(factory, %{})
   end
 end

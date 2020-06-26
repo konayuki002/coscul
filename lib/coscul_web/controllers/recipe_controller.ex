@@ -2,7 +2,7 @@ defmodule CosculWeb.RecipeController do
   use CosculWeb, :controller
 
   alias Coscul.Data
-  alias Coscul.Data.Recipe
+  alias Coscul.Data.{Recipe, RecipeTerm}
 
   def index(conn, _params) do
     recipes = Data.list_recipes()
@@ -11,7 +11,16 @@ defmodule CosculWeb.RecipeController do
 
   def new(conn, _params) do
     changeset = Data.change_recipe(%Recipe{})
-    render(conn, "new.html", changeset: changeset)
+    items = Data.list_items()
+    recipe_categories = Data.list_recipe_categories()
+    recipe_term_changeset = RecipeTerm.changeset(%RecipeTerm{}, %{})
+
+    render(conn, "new.html",
+      changeset: changeset,
+      items: items,
+      recipe_term_changeset: recipe_term_changeset,
+      recipe_categories: recipe_categories
+    )
   end
 
   def create(conn, %{"recipe" => recipe_params}) do
@@ -34,7 +43,17 @@ defmodule CosculWeb.RecipeController do
   def edit(conn, %{"id" => id}) do
     recipe = Data.get_recipe!(id)
     changeset = Data.change_recipe(recipe)
-    render(conn, "edit.html", recipe: recipe, changeset: changeset)
+    items = Data.list_items()
+    recipe_categories = Data.list_recipe_categories()
+    recipe_term_changeset = RecipeTerm.changeset(%RecipeTerm{}, %{})
+
+    render(conn, "edit.html",
+      recipe: recipe,
+      changeset: changeset,
+      items: items,
+      recipe_term_changeset: recipe_term_changeset,
+      recipe_categories: recipe_categories
+    )
   end
 
   def update(conn, %{"id" => id, "recipe" => recipe_params}) do

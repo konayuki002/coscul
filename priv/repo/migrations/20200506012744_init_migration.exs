@@ -1,35 +1,40 @@
 defmodule Coscul.Repo.Migrations.InitMigration do
   use Ecto.Migration
 
-  def up do
-    create_if_not_exists table(:items) do
+  def change do
+    create table(:items) do
       add :name, :string
       add :stack, :integer
+      add :is_liquid, :boolean
       timestamps()
     end
 
-    create_if_not_exists table(:recipes) do
+    create table(:recipe_categories) do
+      add :name, :string
+      timestamps()
+    end
+
+    create table(:factories) do
+      add :name, :string
+      add :can_input_liquid, :boolean, default: false, null: false
+      add :crafting_speed, :float
+      add :recipe_category_id, references(:recipe_categories)
+      timestamps()
+    end
+
+    create table(:recipes) do
       add :time, :float
+      add :recipe_category_id, references(:recipe_categories)
       timestamps()
     end
 
-    create_if_not_exists table(:recipe_terms) do
+    create table(:recipe_terms) do
+      add :value, :integer
       add :item_id, references(:items)
       add :recipe_id, references(:recipes)
-      add :value, :integer
       timestamps()
     end
 
     create_if_not_exists unique_index(:recipe_terms, [:item_id, :recipe_id])
-  end
-
-  def down do
-    drop_if_exists unique_index(:recipe_terms, [:item_id, :recipe_id])
-
-    drop_if_exists table(:recipe_terms)
-
-    drop_if_exists table(:items)
-
-    drop_if_exists table(:recipes)
   end
 end

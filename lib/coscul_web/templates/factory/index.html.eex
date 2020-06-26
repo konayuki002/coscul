@@ -1,0 +1,31 @@
+<h1>Listing Factories</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Can input liquid</th>
+      <th>Crafting speed</th>
+      <th>Recipe Category</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for factory <- @factories do %>
+    <tr>
+      <td><%= factory.name %></td>
+      <td><%= factory.can_input_liquid %></td>
+      <td><%= factory.crafting_speed %></td>
+      <td><%= factory.recipe_category.name %></td>
+      <td>
+        <span><%= link "Show", to: Routes.factory_path(@conn, :show, factory) %></span>
+        <span><%= link "Edit", to: Routes.factory_path(@conn, :edit, factory) %></span>
+        <span><%= link "Delete", to: Routes.factory_path(@conn, :delete, factory), method: :delete, data: [confirm: "Are you sure?"] %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Factory", to: Routes.factory_path(@conn, :new) %></span>
