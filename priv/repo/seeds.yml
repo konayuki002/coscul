@@ -1,0 +1,93 @@
+items:
+  - name: 鉄鉱石
+    stack: 50
+    is_liquid: false
+    order: 0
+  - name: 銅鉱石
+    stack: 50
+    is_liquid: false
+    order: 1
+  - name: 鉄板
+    stack: 100
+    is_liquid: false
+    order: 2
+  - name: 銅板
+    stack: 100
+    is_liquid: false
+    order: 3
+  - name: 銅線
+    stack: 200
+    is_liquid: false
+    order: 4
+  - name: 電子基板
+    stack: 200
+    is_liquid: false
+    order: 5
+recipe_categories:
+  - name: 採掘
+  - name: 精錬
+  - name: 組立
+factories:
+  - name: 手動組立
+    can_input_liquid: false
+    crafting_speed: 1.0
+    recipe_category: 組立
+  - name: 組立機1
+    can_input_liquid: false
+    crafting_speed: 0.5
+    recipe_category: 組立
+  - name: 組立機2
+    can_input_liquid: false
+    crafting_speed: 0.75
+    recipe_category: 組立
+  - name: 組立機3
+    can_input_liquid: false
+    crafting_speed: 1.25
+    recipe_category: 組立
+recipes:
+  - time: 2.0
+    recipe_category: 採掘
+    order: 0
+    recipe_terms:
+      - item: 鉄鉱石
+        value: 1
+  - time: 2.0
+    recipe_category: 採掘
+    order: 1
+    recipe_terms:
+      - item: 銅鉱石
+        value: 1
+  - time: 3.2
+    recipe_category: 精錬
+    order: 2
+    recipe_terms:
+      - item: 鉄鉱石
+        value: -1
+      - item: 鉄板
+        value: 1
+  - time: 3.2
+    recipe_category: 精錬
+    order: 3
+    recipe_terms:
+      - item: 銅鉱石
+        value: -1
+      - item: 銅板
+        value: 1
+  - time: 0.5
+    recipe_category: 組立
+    order: 4
+    recipe_terms:
+      - item: 銅板
+        value: -1
+      - item: 銅線
+        value: 2
+  - time: 1.25
+    recipe_category: 組立
+    order: 5
+    recipe_terms:
+      - item: 鉄板
+        value: -1
+      - item: 銅線
+        value: -3
+      - item: 電子基板
+        value: 1

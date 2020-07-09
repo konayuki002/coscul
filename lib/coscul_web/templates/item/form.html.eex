@@ -13,6 +13,14 @@
   <%= number_input f, :stack, step: "any" %>
   <%= error_tag f, :stack %>
 
+  <%= label f, :is_liquid %>
+  <%= checkbox f, :is_liquid %>
+  <%= error_tag f, :is_liquid %>
+
+  <%= label f, :order %>
+  <%= number_input f, :order, step: "any" %>
+  <%= error_tag f, :order %>
+
   <div>
     <%= submit "Save" %>
   </div>

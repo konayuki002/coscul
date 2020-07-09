@@ -28,6 +28,8 @@
   <li>
     <strong>Recipe Category:</strong>
     <%= @recipe.recipe_category.name %>
+    <strong>Order:</strong>
+    <%= @recipe.order %>
   </li>
 
 </ul>

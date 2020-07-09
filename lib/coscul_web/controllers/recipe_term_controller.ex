@@ -17,8 +17,6 @@ defmodule CosculWeb.RecipeTermController do
   end
 
   def create(conn, %{"recipe_term" => recipe_term_params}) do
-    IO.inspect(conn)
-
     case Data.create_recipe_term(recipe_term_params) do
       {:ok, recipe_term} ->
         conn

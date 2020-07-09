@@ -6,6 +6,7 @@ defmodule Coscul.Repo.Migrations.InitMigration do
       add :name, :string
       add :stack, :integer
       add :is_liquid, :boolean
+      add :order, :integer
       timestamps()
     end
 
@@ -25,6 +26,7 @@ defmodule Coscul.Repo.Migrations.InitMigration do
     create table(:recipes) do
       add :time, :float
       add :recipe_category_id, references(:recipe_categories)
+      add :order, :integer
       timestamps()
     end
 

@@ -16,18 +16,12 @@ Mix.Task.run("ecto.migrate")
 alias Coscul.Repo
 
 alias Coscul.Data.{Item, Recipe, RecipeTerm, RecipeCategory, Factory}
-
 iron_ore = Repo.insert!(%Item{name: "鉄鉱石", stack: 50, is_liquid: false, order: 0})
 copper_ore = Repo.insert!(%Item{name: "銅鉱石", stack: 50, is_liquid: false, order: 1})
 iron_plate = Repo.insert!(%Item{name: "鉄板", stack: 100, is_liquid: false, order: 2})
 copper_plate = Repo.insert!(%Item{name: "銅板", stack: 100, is_liquid: false, order: 3})
 copper_wire = Repo.insert!(%Item{name: "銅線", stack: 200, is_liquid: false, order: 4})
 electronic_circuit = Repo.insert!(%Item{name: "電子基板", stack: 200, is_liquid: false, order: 5})
-iron_gear_wheel = Repo.insert!(%Item{name: "歯車", stack: 100, is_liquid: false, order: 6})
-inserter = Repo.insert!(%Item{name: "インサータ", stack: 50, is_liquid: false, order: 7})
-transport_belt = Repo.insert!(%Item{name: "搬送ベルト", stack: 100, is_liquid: false, order: 8})
-science_pack_1 = Repo.insert!(%Item{name: "サイエンスパック1", stack: 200, is_liquid: false, order: 9})
-science_pack_2 = Repo.insert!(%Item{name: "サイエンスパック2", stack: 200, is_liquid: false, order: 10})
 
 recipe_category_mining = Repo.insert!(%RecipeCategory{name: "採掘"})
 recipe_category_furnace = Repo.insert!(%RecipeCategory{name: "精錬"})
@@ -100,108 +94,3 @@ Repo.insert!(%RecipeTerm{value: -1, item_id: iron_plate.id, recipe_id: assemble_
 Repo.insert!(%RecipeTerm{value: -3, item_id: copper_wire.id, recipe_id: assemble_circuit.id})
 
 Repo.insert!(%RecipeTerm{value: 1, item_id: electronic_circuit.id, recipe_id: assemble_circuit.id})
-
-assemble_iron_gear_wheel =
-  Repo.insert!(%Recipe{time: 0.5, recipe_category_id: recipe_category_assembler.id, order: 6})
-
-Repo.insert!(%RecipeTerm{
-  value: -2,
-  item_id: iron_plate.id,
-  recipe_id: assemble_iron_gear_wheel.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: 1,
-  item_id: iron_gear_wheel.id,
-  recipe_id: assemble_iron_gear_wheel.id
-})
-
-assemble_inserter =
-  Repo.insert!(%Recipe{time: 0.5, recipe_category_id: recipe_category_assembler.id, order: 7})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: electronic_circuit.id,
-  recipe_id: assemble_inserter.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: iron_gear_wheel.id,
-  recipe_id: assemble_inserter.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: iron_plate.id,
-  recipe_id: assemble_inserter.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: 1,
-  item_id: inserter.id,
-  recipe_id: assemble_inserter.id
-})
-
-assemble_transport_belt =
-  Repo.insert!(%Recipe{time: 0.5, recipe_category_id: recipe_category_assembler.id, order: 8})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: iron_gear_wheel.id,
-  recipe_id: assemble_transport_belt.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: iron_plate.id,
-  recipe_id: assemble_transport_belt.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: 2,
-  item_id: transport_belt.id,
-  recipe_id: assemble_transport_belt.id
-})
-
-assemble_science_pack_1 =
-  Repo.insert!(%Recipe{time: 5.0, recipe_category_id: recipe_category_assembler.id, order: 9})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: copper_plate.id,
-  recipe_id: assemble_science_pack_1.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: iron_gear_wheel.id,
-  recipe_id: assemble_science_pack_1.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: 1,
-  item_id: science_pack_1.id,
-  recipe_id: assemble_science_pack_1.id
-})
-
-assemble_science_pack_2 =
-  Repo.insert!(%Recipe{time: 6.0, recipe_category_id: recipe_category_assembler.id, order: 10})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: inserter.id,
-  recipe_id: assemble_science_pack_2.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: -1,
-  item_id: transport_belt.id,
-  recipe_id: assemble_science_pack_2.id
-})
-
-Repo.insert!(%RecipeTerm{
-  value: 1,
-  item_id: science_pack_2.id,
-  recipe_id: assemble_science_pack_2.id
-})

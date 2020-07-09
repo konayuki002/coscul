@@ -7,6 +7,7 @@ defmodule Coscul.Data.Item do
           name: String.t(),
           stack: integer(),
           is_liquid: boolean(),
+          order: integer(),
           recipe_terms: list(RecipeTerm.t())
         }
 
@@ -14,6 +15,7 @@ defmodule Coscul.Data.Item do
     field :name, :string
     field :stack, :integer
     field :is_liquid, :boolean
+    field :order, :integer
     has_many :recipe_terms, RecipeTerm
 
     timestamps()
@@ -22,7 +24,7 @@ defmodule Coscul.Data.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :stack, :is_liquid])
-    |> validate_required([:name, :stack, :is_liquid])
+    |> cast(attrs, [:name, :stack, :is_liquid, :order])
+    |> validate_required([:name, :stack, :is_liquid, :order])
   end
 end

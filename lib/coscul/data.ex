@@ -20,6 +20,7 @@ defmodule Coscul.Data do
   @spec list_items() :: list(Item.t())
   def list_items do
     Item
+    |> order_by(:order)
     |> Repo.all()
   end
 
@@ -123,7 +124,8 @@ defmodule Coscul.Data do
   @spec list_recipes() :: list(Recipe.t())
   def list_recipes do
     Recipe
-    |> preload([{:recipe_terms, :item}, :recipe_category])
+    |> preload([{:recipe_terms, ^order_recipe_term_by_item_order}, :recipe_category])
+    |> order_by(:order)
     |> Repo.all()
   end
 
@@ -144,8 +146,15 @@ defmodule Coscul.Data do
   @spec get_recipe!(integer()) :: Recipe.t()
   def get_recipe!(id) do
     Recipe
-    |> preload([{:recipe_terms, :item}, :recipe_category])
+    |> preload([{:recipe_terms, ^order_recipe_term_by_item_order}, :recipe_category])
     |> Repo.get!(id)
+  end
+
+  defp order_recipe_term_by_item_order() do
+    RecipeTerm
+    |> join(:left, [r], i in assoc(r, :item))
+    |> order_by([r, i], asc: i.order)
+    |> preload([:item])
   end
 
   @doc """

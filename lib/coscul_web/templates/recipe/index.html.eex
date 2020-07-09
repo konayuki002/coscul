@@ -6,6 +6,7 @@
       <th>Time</th>
       <th>Terms</th>
       <th>Recipe Category</th>
+      <th>Order</th>
       <th></th>
     </tr>
   </thead>
@@ -25,6 +26,7 @@
       <% end %>
       </td>
       <td><%= recipe.recipe_category.name %></td>
+      <td><%= recipe.order %></td>
       <td>
         <span><%= link "Show", to: Routes.recipe_path(@conn, :show, recipe) %></span>
         <span><%= link "Edit", to: Routes.recipe_path(@conn, :edit, recipe) %></span>

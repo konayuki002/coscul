@@ -22,6 +22,7 @@ defmodule CosculWeb.Router do
     resources "/recipe_terms", RecipeTermController
     resources "/recipe_categories", RecipeCategoryController
     resources "/factories", FactoryController
+    get "/production_lines", ProductionLineController, :expand
   end
 
   scope "/api", CosculWeb.Api, as: :api do

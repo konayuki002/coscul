@@ -13,6 +13,10 @@
   <%= select f, :recipe_category_id, Enum.map(@recipe_categories, fn(x) -> {x.name, x.id} end), seleceted: :recipe_category_id%>
   <%= error_tag f, :recipe_category_id%>
 
+  <%= label f, :order %>
+  <%= number_input f, :order, step: 1 %>
+  <%= error_tag f, :order %>
+
   <strong>Recipe</strong> Input later.
 <div>
   <%= submit "Save" %>

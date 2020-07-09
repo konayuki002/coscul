@@ -1,0 +1,41 @@
+<h1>Production Line</h1>
+
+<%= form_tag Routes.production_line_path(@conn, :expand), method: :get do %>
+
+  <div>
+  <%= content_tag(:label, "Item", for: :item_id)%>
+  </div>
+  <%= content_tag :select, name: "item_id", id: :item_id do %>
+    <%= for item <- @items do %>
+      <%= content_tag(:option, item.name, value: item.id, selected: format_item_id_number(@conn, item)) %>
+    <% end %>
+  <% end %>
+  
+  <%= content_tag(:label, "Require", for: :required_item_value) %>
+  <%= tag(:input, type: :number, name: :required_item_value, id: :required_item_value, step: :any, value: format_required_item_value_number(@conn)) %>
+  
+  <div>
+  <%= tag(:input, type: :submit, value: "calculate") %>
+  </div>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for item_expanded <- @items_expanded do %>
+    <tr>
+      <td>
+        <span> <%= item_expanded.item.name %> </span>
+      </td>
+      <td>
+        <span> <%= item_expanded.value %> </span>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

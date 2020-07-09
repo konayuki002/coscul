@@ -1,0 +1,69 @@
+items:
+  - name: 原油
+    stack: 100
+    is_liquid: true
+    order: 0
+  - name: 重油
+    stack: 100
+    is_liquid: true
+    order: 1
+  - name: 軽油
+    stack: 100
+    is_liquid: true
+    order: 2
+  - name: プロパン
+    stack: 100
+    is_liquid: true
+    order: 3
+recipe_categories:
+  - name: 採掘
+  - name: 石油精製
+  - name: 化学プラント
+factories:
+  - name: 油井
+    can_input_liquid: true
+    crafting_speed: 1.0
+    recipe_category: 採掘
+  - name: 石油精製
+    can_input_liquid: true
+    crafting_speed: 1.0
+    recipe_category: 石油精製
+  - name: 化学プラント
+    can_input_liquid: true
+    crafting_speed: 1.0
+    recipe_category: 化学プラント
+recipes:
+  - time: 1.0
+    recipe_category: 採掘
+    order: 0
+    recipe_terms:
+      - item: 原油
+        value: 1
+  - time: 5.0
+    recipe_category: 石油精製
+    order: 1
+    recipe_terms:
+      - item: 原油
+        value: -100
+      - item: 重油
+        value: 25
+      - item: 軽油
+        value: 45
+      - item: プロパン
+        value: 55
+  - time: 2.0
+    recipe_category: 化学プラント
+    order: 2
+    recipe_terms:
+      - item: 重油
+        value: -40
+      - item: 軽油
+        value: -30
+  - time: 2.0
+    recipe_category: 化学プラント
+    order: 3
+    recipe_terms:
+      - item: 軽油
+        value: -30
+      - item: プロパン
+        value: 20

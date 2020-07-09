@@ -18,6 +18,7 @@
             <li><a href="<%= Routes.recipe_path(@conn, :index) %>">Recipe</a></li>
             <li><a href="<%= Routes.recipe_category_path(@conn, :index) %>">Recipe Category</a></li>
             <li><a href="<%= Routes.factory_path(@conn, :index) %>">Factory</a></li>
+            <li><a href="<%= Routes.production_line_path(@conn, :expand) %>">Production Line</a></li>
           </ul>
         </nav>
         <a href="https://phoenixframework.org/" class="phx-logo">

@@ -1,0 +1,8 @@
+<h1>Show Production line</h1>
+
+<ul>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.production_line_path(@conn, :edit, @production_line) %></span>
+<span><%= link "Back", to: Routes.production_line_path(@conn, :index) %></span>
